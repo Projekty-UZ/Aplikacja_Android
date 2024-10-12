@@ -1,47 +1,74 @@
 package com.example.aplikacja_android
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.aplikacja_android.navigation.BottomNavBar
+import com.example.aplikacja_android.navigation.BottomNavItem
+import com.example.aplikacja_android.navigation.Navigation
+import com.example.aplikacja_android.navigation.Screens
 import com.example.aplikacja_android.ui.theme.Aplikacja_AndroidTheme
+import com.example.aplikacja_android.ui.viewModels.DatabaseViewModel
+import com.example.aplikacja_android.ui.viewModels.DatabaseViewModelFactory
+import com.example.aplikacja_android.ui.viewModels.LocalDatabaseViewModel
 
 class MainActivity : ComponentActivity() {
+    val databaseViewModel: DatabaseViewModel by viewModels<DatabaseViewModel>{
+        DatabaseViewModelFactory((application as AndroidApp).repository)
+    }
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             Aplikacja_AndroidTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                CompositionLocalProvider(
+                    LocalDatabaseViewModel provides databaseViewModel
+                ) {
+                    val navController = rememberNavController()
+                    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = currentBackStackEntry?.destination?.route
+                    Scaffold(
+                        bottomBar = {
+                            BottomNavBar(
+                                items = listOf(
+                                    BottomNavItem(
+                                        Screens.RecipeListScreen.route,
+                                        "Recipes",
+                                        painterResource(id = R.drawable.recipes)
+                                    ),
+                                    BottomNavItem(
+                                        Screens.CalendarScreen.route,
+                                        "Calendar",
+                                        painterResource(id = R.drawable.calendar)
+                                    ),
+                                ),
+                                navController = navController,
+                                onItemClick = {
+                                    navController.navigate(it.route)
+                                }
+                            )
+                        }
+                    ) {
+                        Navigation(navcontroller = navController)
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Aplikacja_AndroidTheme {
-        Greeting("Android")
     }
 }
