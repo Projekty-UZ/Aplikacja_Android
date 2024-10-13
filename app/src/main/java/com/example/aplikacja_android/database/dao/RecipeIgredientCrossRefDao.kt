@@ -11,6 +11,7 @@ import androidx.room.Update
 import com.example.aplikacja_android.database.models.Igredient
 import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
+import com.example.aplikacja_android.database.models.Unit
 
 @Dao
 interface RecipeIgredientCrossRefDao {
@@ -21,9 +22,9 @@ interface RecipeIgredientCrossRefDao {
     @Update
     suspend fun update(crossRef: RecipeIgredientCrossRef)
 
-    @Query("SELECT Igredients.*,Units.jednostka,RecipeIgredientCrossRef.ilosc FROM Igredients " +
+    @Query("SELECT Igredients.*,Units.*,RecipeIgredientCrossRef.ilosc FROM Igredients " +
             "INNER JOIN RecipeIgredientCrossRef ON Igredients.id = RecipeIgredientCrossRef.igredientId " +
-            "INNER JOIN Units ON Units.id = RecipeIgredientCrossRef.unitId " +
+            "INNER JOIN Units ON Units.unitId = RecipeIgredientCrossRef.unitId " +
             "WHERE RecipeIgredientCrossRef.recipeId = :id ")
     fun getAllIgredientsOfRecipeWithUnits(id:Int):LiveData<List<IngredientWithUnit>>
 
@@ -35,6 +36,6 @@ interface RecipeIgredientCrossRefDao {
 
 data class IngredientWithUnit(
     @Embedded val ingredient: Igredient,
-    val jednostka: String, // Unit type (e.g., g, ml, etc.)
+    @Embedded val unit: Unit, // Unit type (e.g., g, ml, etc.)
     val ilosc: Int // Quantity of the ingredient
 )

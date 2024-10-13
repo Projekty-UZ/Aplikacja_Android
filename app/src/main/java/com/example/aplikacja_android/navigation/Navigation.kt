@@ -5,10 +5,16 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.example.aplikacja_android.database.models.Recipe
+import com.example.aplikacja_android.ui.screens.AddRecipeScreen
 import com.example.aplikacja_android.ui.screens.CalendarScreen
+import com.example.aplikacja_android.ui.screens.EditRecipeScreen
 import com.example.aplikacja_android.ui.screens.RecipeListScreen
 import com.example.aplikacja_android.ui.screens.RecipeScreen
+import com.example.aplikacja_android.ui.viewModels.LocalDatabaseViewModel
 
 @Composable
 fun Navigation(navcontroller:NavHostController){
@@ -24,8 +30,32 @@ fun Navigation(navcontroller:NavHostController){
         composable(Screens.CalendarScreen.route) {
             CalendarScreen()
         }
-        composable(Screens.RecipeScreen.route) {
-            RecipeScreen()
+        composable(Screens.AddRecipeScreen.route) {
+            AddRecipeScreen(navcontroller)
+        }
+        composable(
+            route=Screens.EditRecipeScreen.route,
+            arguments = listOf(navArgument("recipeId") { type = NavType.IntType })
+        ){backStackEntry ->
+            val databaseViewModel = LocalDatabaseViewModel.current
+            val recipeId = backStackEntry.arguments?.getInt("recipeId")
+            val recipe = databaseViewModel.selectedRecipe.value
+
+            if (recipe != null && recipe.id == recipeId) {
+                EditRecipeScreen(navController = navcontroller, recipe = recipe)
+            }
+        }
+        composable(
+            route=Screens.RecipeScreen.route,
+            arguments = listOf(navArgument("recipeId") { type = NavType.IntType })
+        ){backStackEntry ->
+            val databaseViewModel = LocalDatabaseViewModel.current
+            val recipeId = backStackEntry.arguments?.getInt("recipeId")
+            val recipe = databaseViewModel.selectedRecipe.value
+
+            if (recipe != null && recipe.id == recipeId) {
+                RecipeScreen(navController = navcontroller, recipe = recipe)
+            }
         }
     }
 }

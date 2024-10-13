@@ -10,7 +10,7 @@ import androidx.room.ForeignKey.Companion.CASCADE
     foreignKeys = [
         ForeignKey(entity = Recipe::class, parentColumns = ["id"], childColumns = ["recipeId"], onDelete = CASCADE),
         ForeignKey(entity = Igredient::class, parentColumns = ["id"], childColumns = ["igredientId"], onDelete = CASCADE),
-        ForeignKey(entity = Unit::class, parentColumns = ["id"], childColumns = ["unitId"], onDelete = CASCADE),
+        ForeignKey(entity = Unit::class, parentColumns = ["unitId"], childColumns = ["unitId"], onDelete = CASCADE),
     ]
     )
 data class RecipeIgredientCrossRef(

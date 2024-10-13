@@ -12,11 +12,13 @@ import com.example.aplikacja_android.database.models.Recipe
 @Dao
 interface RecipeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(recipe: Recipe)
+    suspend fun insert(recipe: Recipe): Long
     @Delete
     suspend fun delete(recipe: Recipe)
     @Update
     suspend fun update(recipe: Recipe)
     @Query("SELECT * FROM Recipes")
     fun getAllRecipes():LiveData<List<Recipe>>
+    @Query("SELECT * FROM RECIPES WHERE id=:id")
+    fun getRecipe(id: Int): Recipe
 }

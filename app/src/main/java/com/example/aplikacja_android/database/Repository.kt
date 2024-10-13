@@ -21,13 +21,16 @@ class Repository(
     fun getIgredientsOfRecipe(id:Int) = recipeIgredientCrossRefDao.getAllIgredientsOfRecipeWithUnits(id)
     fun getRecipesWithIgredient(id: Int) = recipeIgredientCrossRefDao.getAllRecipesWithIgredient(id)
 
-    suspend fun createRecipe(recipe: Recipe) = recipeDao.insert(recipe)
+    fun getSingleRecipe(id: Int): Recipe = recipeDao.getRecipe(id)
+    suspend fun createRecipe(recipe: Recipe) : Long{
+        return recipeDao.insert(recipe)
+    }
     suspend fun updateRecipe(recipe: Recipe) = recipeDao.update(recipe)
     suspend fun deleteRecipe(recipe: Recipe) = recipeDao.delete(recipe)
 
     suspend fun createIgredient(igredient: Igredient) = igredientDao.insert(igredient)
-    suspend fun updateRecipe(igredient: Igredient) = igredientDao.update(igredient)
-    suspend fun deleteRecipe(igredient: Igredient) = igredientDao.delete(igredient)
+    suspend fun updateIgredient(igredient: Igredient) = igredientDao.update(igredient)
+    suspend fun deleteIgredient(igredient: Igredient) = igredientDao.delete(igredient)
 
     suspend fun createUnit(unit: Unit) = unitDao.insert(unit)
 
