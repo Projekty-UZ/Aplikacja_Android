@@ -34,6 +34,10 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
         repository.updateRecipe(recipe)
     }
 
+    suspend fun deleteRecipesWithCrossRef(recipe: Recipe){
+        repository.deleteRecipe(recipe)
+    }
+
     fun getSingleRecipe(id: Int): Recipe {
         return repository.getSingleRecipe(id)
     }
@@ -42,6 +46,9 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
         return repository.getIgredientsOfRecipe(id)
     }
 
+    fun getRecipesWithIngredient(id: Int): LiveData<List<Recipe>>{
+        return repository.getRecipesWithIgredient(id)
+    }
 
 
     suspend fun deleteCrossRef(recipeIgredientCrossRef: RecipeIgredientCrossRef){

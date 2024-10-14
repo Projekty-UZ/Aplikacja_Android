@@ -28,7 +28,7 @@ interface RecipeIgredientCrossRefDao {
             "WHERE RecipeIgredientCrossRef.recipeId = :id ")
     fun getAllIgredientsOfRecipeWithUnits(id:Int):LiveData<List<IngredientWithUnit>>
 
-    @Query("SELECT Recipes.* FROM Recipes " +
+    @Query("SELECT DISTINCT Recipes.* FROM Recipes " +
             "INNER JOIN RecipeIgredientCrossRef ON Recipes.id = RecipeIgredientCrossRef.recipeId " +
             "WHERE RecipeIgredientCrossRef.igredientId = :id")
     fun getAllRecipesWithIgredient(id:Int):LiveData<List<Recipe>>

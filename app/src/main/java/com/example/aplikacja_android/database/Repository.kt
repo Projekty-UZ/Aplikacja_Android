@@ -26,7 +26,8 @@ class Repository(
         return recipeDao.insert(recipe)
     }
     suspend fun updateRecipe(recipe: Recipe) = recipeDao.update(recipe)
-    suspend fun deleteRecipe(recipe: Recipe) = recipeDao.delete(recipe)
+
+    suspend fun deleteRecipe(recipe: Recipe) = recipeDao.deleteRecipeWithCrossRefs(recipe)
 
     suspend fun createIgredient(igredient: Igredient) = igredientDao.insert(igredient)
     suspend fun updateIgredient(igredient: Igredient) = igredientDao.update(igredient)
