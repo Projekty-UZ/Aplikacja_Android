@@ -5,11 +5,15 @@ import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.aplikacja_android.database.converters.DateConverter
+import com.example.aplikacja_android.database.dao.CalendarMealDao
 import com.example.aplikacja_android.database.dao.IgredientDao
 import com.example.aplikacja_android.database.dao.RecipeDao
 import com.example.aplikacja_android.database.dao.RecipeIgredientCrossRefDao
 import com.example.aplikacja_android.database.dao.UnitDao
+import com.example.aplikacja_android.database.models.CalendarMeal
 import com.example.aplikacja_android.database.models.Igredient
 import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
@@ -18,12 +22,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-@Database(entities = [Recipe::class, Igredient::class, RecipeIgredientCrossRef::class,Unit::class], version = 1, exportSchema = false)
+@Database(entities = [Recipe::class, Igredient::class, RecipeIgredientCrossRef::class,Unit::class, CalendarMeal::class], version = 2, exportSchema = false)
+@TypeConverters(DateConverter::class)
 abstract  class AppDatabase: RoomDatabase(){
     abstract fun recipeDao(): RecipeDao
     abstract fun igredientDao(): IgredientDao
     abstract fun recipeIgredientCrossRefDao(): RecipeIgredientCrossRefDao
     abstract fun unitDao(): UnitDao
+    abstract fun calendarMealDao(): CalendarMealDao
     companion object{
         @Volatile
         private var INSTANCE: AppDatabase? = null

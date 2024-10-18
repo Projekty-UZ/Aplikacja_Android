@@ -13,5 +13,7 @@ sealed class Screens (val route:String){
     }
     object RecipeListScreen: Screens("recipelist");
     object CalendarScreen: Screens("calendar");
-
+    object RecipeWeekList: Screens("recipeweeklist/{startweek}/{endweek}"){
+        fun createRoute(startweek: Long,endweek: Long) = "recipeweeklist/${startweek}/${endweek}"
+    }
 }

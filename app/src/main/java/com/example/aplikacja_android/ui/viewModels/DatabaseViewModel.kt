@@ -8,12 +8,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.aplikacja_android.database.Repository
 import com.example.aplikacja_android.database.dao.IngredientWithUnit
+import com.example.aplikacja_android.database.models.CalendarMeal
 import com.example.aplikacja_android.database.models.Igredient
 import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
 import com.example.aplikacja_android.database.models.Unit
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.util.Date
 
 class DatabaseViewModel(private val repository:Repository):ViewModel() {
     val allIgredients:LiveData<List<Igredient>> = repository.igredients
@@ -57,6 +60,18 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
 
     suspend fun saveCrossRef(recipeIgredientCrossRef: RecipeIgredientCrossRef){
         repository.createRecipeIgredientCrossRef(recipeIgredientCrossRef)
+    }
+
+    suspend fun getAllRecipesOfDate(localDate: LocalDate): List<CalendarMeal>{
+        return repository.getAllRecipesOfDate(localDate)
+    }
+
+    suspend fun deleteAllRecipesOfDate(localDate: LocalDate){
+        return repository.deleteAllRecipesOfDate(localDate)
+    }
+
+    suspend fun insertCalendarMeal(calendarMeal: CalendarMeal){
+        return repository.saveCalendarMeal(calendarMeal)
     }
 
 }

@@ -9,5 +9,9 @@ import kotlinx.coroutines.SupervisorJob
 class AndroidApp : Application(){
     val applicationScope = CoroutineScope(SupervisorJob())
     val database by lazy { AppDatabase.getDatabase(this,applicationScope) }
-    val repository by lazy { Repository(database.igredientDao(),database.recipeDao(),database.unitDao(),database.recipeIgredientCrossRefDao()) }
+    val repository by lazy { Repository(database.igredientDao()
+        ,database.recipeDao()
+        ,database.unitDao()
+        ,database.recipeIgredientCrossRefDao(),
+        database.calendarMealDao()) }
 }

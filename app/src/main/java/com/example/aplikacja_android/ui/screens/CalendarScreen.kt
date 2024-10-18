@@ -1,6 +1,7 @@
 package com.example.aplikacja_android.ui.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,41 +16,73 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.aplikacja_android.database.models.CalendarMeal
+import com.example.aplikacja_android.database.models.Recipe
+import com.example.aplikacja_android.navigation.Screens
+import com.example.aplikacja_android.ui.composables.RecipeSelection
+import com.example.aplikacja_android.ui.viewModels.DatabaseViewModel
+import com.example.aplikacja_android.ui.viewModels.LocalDatabaseViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
-import java.util.Locale
+import java.time.ZoneId
 
+@OptIn(ExperimentalMaterial3Api::class, DelicateCoroutinesApi::class)
 @SuppressLint("NewApi")
 @Composable
-fun CalendarScreen() {
+fun CalendarScreen(navController: NavController) {
+    val databaseViewModel = LocalDatabaseViewModel.current
+    val recipes = databaseViewModel.allRecipes.observeAsState()
+
+    val coroutineScope = rememberCoroutineScope()
+
     var currentYear by remember { mutableStateOf(LocalDate.now().year) }
     var currentMonth by remember { mutableStateOf(LocalDate.now().monthValue) }
+
+    var mealsForSelectedDate by remember { mutableStateOf(emptyList<CalendarMeal>()) }
+
+    var selectedDay: Int? by remember { mutableStateOf(0) }
+    var selectedDateText by remember { mutableStateOf("") }
 
     val daysOfMonth = getDaysInMonth(currentYear, currentMonth)
     val monthName = getMonthName(currentYear, currentMonth)
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    var breakfastMeal by remember { mutableStateOf<Recipe?>(null) }
+    var dinnerMeal by remember { mutableStateOf<Recipe?>(null) }
+    var supperMeal by remember { mutableStateOf<Recipe?>(null) }
+
+    Column(modifier = Modifier.padding(16.dp).fillMaxSize()) {
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(onClick = {
+                selectedDay = 0
                 // Navigate to the previous month
                 if (currentMonth == 1) {
                     currentMonth = 12
@@ -69,6 +102,7 @@ fun CalendarScreen() {
             )
 
             Button(onClick = {
+                selectedDay = 0
                 // Navigate to the next month
                 if (currentMonth == 12) {
                     currentMonth = 1
@@ -101,7 +135,7 @@ fun CalendarScreen() {
         // Display the days in a grid
         LazyVerticalGrid(
             columns = GridCells.Fixed(7),
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(4.dp)
         ) {
             items(daysOfMonth.size) { index ->
@@ -109,15 +143,122 @@ fun CalendarScreen() {
                 Box(
                     modifier = Modifier
                         .aspectRatio(1f)
-                        .padding(4.dp).clickable {  },
+                        .padding(4.dp)
+                        .background(
+                            color = if (day == selectedDay) Color.White else Color.Transparent,
+                            shape = CircleShape
+                        )
+                        .clickable{
+                            if(day!=null) {
+                                selectedDay = day
+                                selectedDateText = "Selected date: $day"
+                                GlobalScope.launch {
+                                    val selectedDate = LocalDate.of(currentYear,currentMonth,selectedDay!!)
+
+                                    mealsForSelectedDate =
+                                        databaseViewModel.getAllRecipesOfDate(selectedDate)
+
+                                    breakfastMeal =
+                                        mealsForSelectedDate.find { it.mealType == "Breakfast" }?.let { databaseViewModel.getSingleRecipe(it.recipeId) }
+
+                                    dinnerMeal =
+                                        mealsForSelectedDate.find { it.mealType == "Dinner" }?.let { databaseViewModel.getSingleRecipe(it.recipeId) }
+
+                                    supperMeal =
+                                        mealsForSelectedDate.find { it.mealType == "Supper" }?.let { databaseViewModel.getSingleRecipe(it.recipeId) }
+                                }
+                            }
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     BasicText(
                         text = day?.toString() ?: "",
-                        style = TextStyle(color = Color.White)
+                        style = TextStyle(
+                            color = if (day == selectedDay) Color.Black else Color.White
+                        )
                     )
                 }
             }
+        }
+        var isBreakfastExpanded by remember { mutableStateOf(false) }
+        var isDinnerExpanded by remember { mutableStateOf(false) }
+        var isSupperExpanded by remember { mutableStateOf(false) }
+
+        if(selectedDay != 0) {
+            RecipeSelection(
+                "Breakfast",
+                isBreakfastExpanded,
+                breakfastMeal,
+                recipes.value,
+                onExpandedChange = { isBreakfastExpanded = it },
+                onMealChange = {breakfastMeal = it }
+            )
+            RecipeSelection(
+                "Dinner",
+                isDinnerExpanded,
+                dinnerMeal,
+                recipes.value,
+                onExpandedChange = { isDinnerExpanded = it },
+                onMealChange = {dinnerMeal = it }
+            )
+            RecipeSelection(
+                "Supper",
+                isSupperExpanded,
+                supperMeal,
+                recipes.value,
+                onExpandedChange = { isSupperExpanded = it },
+                onMealChange = { supperMeal = it }
+            )
+            Button(
+                onClick = {
+                    saveMeals(selectedDay!!,currentMonth,currentYear,breakfastMeal,dinnerMeal,supperMeal,databaseViewModel)
+                    selectedDay = 0
+                          },
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+            ) {
+                Text("Save Meals")
+            }
+
+            Button(
+                onClick = {
+                    val selectedDate = LocalDate.of(currentYear,currentMonth,selectedDay!!)
+                    val startOfWeek: Long? = selectedDate.with(DayOfWeek.MONDAY).atStartOfDay(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
+                    val endOfWeek: Long? = selectedDate.with(DayOfWeek.SUNDAY).atStartOfDay(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
+                    selectedDay = 0
+                    navController.navigate(Screens.RecipeWeekList.createRoute(startOfWeek!!,endOfWeek!!))
+                },
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+            ) {
+                Text("Show this week recipes")
+            }
+        }
+
+
+    }
+}
+
+@SuppressLint("NewApi")
+@OptIn(DelicateCoroutinesApi::class)
+fun saveMeals(
+    day:Int,
+    month:Int,
+    year: Int,
+    breakfastMeal: Recipe?,
+    dinnerMeal: Recipe?,
+    supperMeal: Recipe?,
+    databaseViewModel: DatabaseViewModel
+){
+    val selectedDate = LocalDate.of(year,month,day)
+    GlobalScope.launch{
+        databaseViewModel.deleteAllRecipesOfDate(selectedDate)
+        if(breakfastMeal != null) {
+            databaseViewModel.insertCalendarMeal(CalendarMeal(0, selectedDate, breakfastMeal.id,"Breakfast"))
+        }
+        if(dinnerMeal != null) {
+            databaseViewModel.insertCalendarMeal(CalendarMeal(0, selectedDate, dinnerMeal.id,"Dinner"))
+        }
+        if(supperMeal != null) {
+            databaseViewModel.insertCalendarMeal(CalendarMeal(0, selectedDate, supperMeal.id,"Supper"))
         }
     }
 }
