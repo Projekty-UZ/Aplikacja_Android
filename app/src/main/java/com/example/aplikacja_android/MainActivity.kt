@@ -79,6 +79,16 @@ class MainActivity : ComponentActivity() {
                                         "Calendar",
                                         painterResource(id = R.drawable.calendar)
                                     ),
+                                    BottomNavItem(
+                                        Screens.ShoppingListScreen.route,
+                                        "Lista",
+                                        painterResource(id = R.drawable.lista)
+                                    ),
+                                    BottomNavItem(
+                                        Screens.IngredientList.route,
+                                        "Składniki",
+                                        painterResource(id = R.drawable.ingredient)
+                                    )
                                 ),
                                 navController = navController,
                                 onItemClick = {

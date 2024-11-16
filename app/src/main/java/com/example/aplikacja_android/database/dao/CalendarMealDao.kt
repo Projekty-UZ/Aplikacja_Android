@@ -22,4 +22,7 @@ interface CalendarMealDao {
 
     @Query("SELECT * FROM CalendarMeals")
     suspend fun getAllMeals(): List<CalendarMeal>
+
+    @Query("SELECT * FROM CalendarMeals WHERE recipeDate BETWEEN :startDate AND :endDate")
+    suspend fun getMealsByDateRange(startDate: LocalDate, endDate: LocalDate): List<CalendarMeal>
 }

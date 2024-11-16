@@ -203,7 +203,7 @@ fun EditRecipeScreen(recipe:Recipe, navController: NavController) {
         Button(
             onClick = {
                 recipeIngredientList = recipeIngredientList.toMutableList().apply {
-                    add(IngredientWithUnit(Igredient(0, ""), Unit(0, ""), ilosc = 0))
+                    add(IngredientWithUnit(Igredient(0, "",""), Unit(0, ""), ilosc = 0))
                 }
             }
         ) {

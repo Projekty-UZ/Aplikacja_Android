@@ -19,4 +19,6 @@ interface IgredientDao {
     suspend fun update(igredient: Igredient)
     @Query("SELECT * FROM Igredients")
     fun getAllIgredients(): LiveData<List<Igredient>>
+    @Query("UPDATE Igredients SET isAvailableAtHome = :isAvailable WHERE id = :ingredientId")
+    suspend fun updateIngredientAvailability(ingredientId: Int, isAvailable: Boolean)
 }

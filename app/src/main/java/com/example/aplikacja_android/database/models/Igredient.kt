@@ -7,4 +7,6 @@ import androidx.room.PrimaryKey
 data class Igredient(
     @PrimaryKey(autoGenerate = true) val id: Int=0,
     val nazwa:String,
+    val kategoria: String,
+    val isAvailableAtHome: Boolean = false
 )
