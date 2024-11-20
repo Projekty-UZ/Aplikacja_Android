@@ -14,6 +14,7 @@ import com.example.aplikacja_android.database.dao.RecipeDao
 import com.example.aplikacja_android.database.dao.RecipeIgredientCrossRefDao
 import com.example.aplikacja_android.database.dao.ShoppingItemDao
 import com.example.aplikacja_android.database.dao.ShoppingListDao
+import com.example.aplikacja_android.database.dao.TipDao
 import com.example.aplikacja_android.database.dao.UnitDao
 import com.example.aplikacja_android.database.models.CalendarMeal
 import com.example.aplikacja_android.database.models.Igredient
@@ -21,6 +22,7 @@ import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
 import com.example.aplikacja_android.database.models.ShoppingItem
 import com.example.aplikacja_android.database.models.ShoppingList
+import com.example.aplikacja_android.database.models.Tip
 import com.example.aplikacja_android.database.models.Unit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
@@ -33,8 +35,9 @@ import kotlinx.coroutines.launch
     Unit::class,
     CalendarMeal::class,
     ShoppingList::class,
-    ShoppingItem::class
-                     ], version = 3, exportSchema = false)
+    ShoppingItem::class,
+    Tip::class
+                     ], version = 4, exportSchema = false)
 @TypeConverters(DateConverter::class)
 abstract  class AppDatabase: RoomDatabase(){
     abstract fun recipeDao(): RecipeDao
@@ -44,6 +47,7 @@ abstract  class AppDatabase: RoomDatabase(){
     abstract fun calendarMealDao(): CalendarMealDao
     abstract fun shoppingListDao(): ShoppingListDao
     abstract fun shoppingItemDao(): ShoppingItemDao
+    abstract fun tipDao(): TipDao
     companion object{
         @Volatile
         private var INSTANCE: AppDatabase? = null
@@ -123,14 +127,31 @@ suspend fun prepopulateDatabase(database: AppDatabase) {
         Unit(jednostka = "lyzeczka")
     )
 
+    val initialTips = listOf(
+        Tip(ingredient = "bread", tip = "Store bread in a paper bag at room temperature to maintain its crusty texture and avoid mold."),
+        Tip(ingredient = "cheese", tip = "Wrap cheese in wax paper and store in the refrigerator to allow it to breathe and prevent drying out."),
+        Tip(ingredient = "carrots", tip = "Keep carrots in a plastic bag in the crisper drawer of your refrigerator to retain moisture."),
+        Tip(ingredient = "milk", tip = "Store milk in the coldest part of the refrigerator, not in the door, to keep it fresh longer."),
+        Tip(ingredient = "apples", tip = "Refrigerate apples in a crisper drawer or in a plastic bag with holes to maintain freshness."),
+        Tip(ingredient = "herbs", tip = "Wrap fresh herbs in a damp paper towel and store them in an airtight container in the refrigerator."),
+        Tip(ingredient = "eggs", tip = "Keep eggs in their original carton in the refrigerator to protect them from odors and maintain freshness."),
+        Tip(ingredient = "onions", tip = "Store onions in a cool, dry, and well-ventilated place, away from potatoes to prevent sprouting."),
+        Tip(ingredient = "olive oil", tip = "Keep olive oil in a dark, cool cupboard to protect it from light and heat, which can cause it to spoil."),
+        Tip(ingredient = "bananas", tip = "Store bananas at room temperature, away from other fruits, to slow down ripening.")
+    )
+
     // Insert each ingredient individually
     initialIngredients.forEach { ingredient ->
         database.igredientDao().insert(ingredient)
-        Log.d("AppDatabase", "added")
     }
 
     // Insert each unit individually
     initialUnits.forEach { unit ->
         database.unitDao().insert(unit)
+    }
+
+    // Insert each tip individually
+    initialTips.forEach { tip ->
+        database.tipDao().insertTip(tip)
     }
 }

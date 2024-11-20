@@ -7,6 +7,7 @@ import com.example.aplikacja_android.database.dao.RecipeDao
 import com.example.aplikacja_android.database.dao.RecipeIgredientCrossRefDao
 import com.example.aplikacja_android.database.dao.ShoppingItemDao
 import com.example.aplikacja_android.database.dao.ShoppingListDao
+import com.example.aplikacja_android.database.dao.TipDao
 import com.example.aplikacja_android.database.dao.UnitDao
 import com.example.aplikacja_android.database.models.CalendarMeal
 import com.example.aplikacja_android.database.models.Igredient
@@ -25,13 +26,15 @@ class Repository(
     private val recipeIgredientCrossRefDao: RecipeIgredientCrossRefDao,
     private val calendarMealDao: CalendarMealDao,
     private val shoppingListDao: ShoppingListDao,
-    private val shoppingItemDao: ShoppingItemDao
+    private val shoppingItemDao: ShoppingItemDao,
+    private val tipDao: TipDao
 ) {
     // Recipe and Ingredient methods
     val recipes = recipeDao.getAllRecipes()
     val igredients = igredientDao.getAllIgredients()
     val units = unitDao.getAllUnits()
     val shoppingLists = shoppingListDao.getAllShoppingLists()
+    val tips = tipDao.getAllTips()
 
     suspend fun createMeasurementUnit(unit: Unit) = unitDao.insert(unit)
 

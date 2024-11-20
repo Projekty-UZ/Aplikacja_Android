@@ -1,12 +1,14 @@
 package com.example.aplikacja_android
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +37,7 @@ class MainActivity : ComponentActivity() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +56,7 @@ class MainActivity : ComponentActivity() {
                     val welcomeMessage = when {
                         currentHour == 10 -> "Czas na sniadanie"
                         currentHour == 15 -> "Czas na obiad"
-                        currentHour == 19 -> "Czas na kolacje"
+                        currentHour == 17 -> "Czas na kolacje"
                         else -> "Witaj"
                     }
 
@@ -87,6 +90,11 @@ class MainActivity : ComponentActivity() {
                                     BottomNavItem(
                                         Screens.IngredientList.route,
                                         "Składniki",
+                                        painterResource(id = R.drawable.ingredient)
+                                    ),
+                                    BottomNavItem(
+                                        Screens.TipScreen.route,
+                                        "Porady",
                                         painterResource(id = R.drawable.ingredient)
                                     )
                                 ),

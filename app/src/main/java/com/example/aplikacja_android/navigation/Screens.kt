@@ -26,4 +26,5 @@ sealed class Screens (val route:String){
     object EditShoppingListScreen: Screens("shoppingList/{listID}"){
         fun createRoute(listID:Int) = "shoppingList/${listID}"
     }
+    object TipScreen: Screens("tipScreen");
 }

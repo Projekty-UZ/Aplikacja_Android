@@ -15,5 +15,6 @@ class AndroidApp : Application(){
         ,database.recipeIgredientCrossRefDao(),
         database.calendarMealDao(),
         database.shoppingListDao(),
-        database.shoppingItemDao()) }
+        database.shoppingItemDao(),
+        database.tipDao()) }
 }

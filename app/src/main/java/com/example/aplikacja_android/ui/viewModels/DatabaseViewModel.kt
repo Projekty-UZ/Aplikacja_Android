@@ -18,6 +18,7 @@ import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
 import com.example.aplikacja_android.database.models.ShoppingItem
 import com.example.aplikacja_android.database.models.ShoppingList
+import com.example.aplikacja_android.database.models.Tip
 import com.example.aplikacja_android.database.models.Unit
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -31,6 +32,7 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
     val allRecipes: LiveData<List<Recipe>> = repository.recipes
     val allUnits: LiveData<List<Unit>> = repository.units
     val allShoppingList: LiveData<List<ShoppingList>> = repository.shoppingLists
+    val allTips: LiveData<List<Tip>> = repository.tips
 
     val selectedRecipe = MutableLiveData<Recipe?>()
     val selectedList = MutableLiveData<ShoppingList?>()

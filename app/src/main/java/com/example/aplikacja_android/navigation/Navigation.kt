@@ -22,6 +22,7 @@ import com.example.aplikacja_android.ui.screens.RecipeListScreen
 import com.example.aplikacja_android.ui.screens.RecipeScreen
 import com.example.aplikacja_android.ui.screens.RecipeWeekList
 import com.example.aplikacja_android.ui.screens.ShoppingListScreen
+import com.example.aplikacja_android.ui.screens.TipScreen
 import com.example.aplikacja_android.ui.viewModels.LocalDatabaseViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -109,6 +110,9 @@ fun Navigation(navcontroller:NavHostController){
             if (shoppingList != null && shoppingList.id == shoppingListId) {
                 CreateShoppingListFromTemplateScreen(navController = navcontroller, shoppingList = shoppingList)
             }
+        }
+        composable(Screens.TipScreen.route){
+            TipScreen(navController = navcontroller)
         }
     }
 }
