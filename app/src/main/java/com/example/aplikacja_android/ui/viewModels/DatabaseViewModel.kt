@@ -13,6 +13,7 @@ import com.example.aplikacja_android.database.Repository
 import com.example.aplikacja_android.database.dao.IngredientWithUnit
 import com.example.aplikacja_android.database.models.CalendarMeal
 import com.example.aplikacja_android.database.models.Igredient
+import com.example.aplikacja_android.database.models.Macros
 import com.example.aplikacja_android.database.models.Note
 import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
@@ -147,6 +148,13 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
     }
     fun getNotesForRecipe(recipeId: Int): LiveData<List<Note>>{
         return repository.getNotesByRecipeId(recipeId)
+    }
+    //macros methods
+    fun getMacros(): LiveData<Macros>{
+        return repository.macros
+    }
+    suspend fun updateMacros(macros: Macros){
+        repository.updateMacros(macros)
     }
     // Generate shopping list based on planned meals for a date range
     @RequiresApi(Build.VERSION_CODES.O)

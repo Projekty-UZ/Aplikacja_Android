@@ -3,6 +3,7 @@ package com.example.aplikacja_android.ui.screens
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.aplikacja_android.navigation.Screens
 import com.example.aplikacja_android.ui.viewModels.LocalDatabaseViewModel
 import java.time.LocalDate
 
@@ -19,13 +21,13 @@ import java.time.LocalDate
 fun DayCalorieScreen(navController: NavController, localDate: LocalDate) {
     val databaseViewModel = LocalDatabaseViewModel.current
     val nutrientValues = databaseViewModel.calculateDayNutrients(localDate).observeAsState()
-
+    val setMacros = databaseViewModel.getMacros().observeAsState()
 
     val recommendedDailyIntake = mapOf(
-        "kalorie" to 2000.0,    // kcal
-        "bialko" to 50.0,       // g
-        "tluszcz" to 70.0,      // g
-        "weglowodany" to 300.0  // g
+        "kalorie" to setMacros.value?.calories ,    // kcal
+        "bialko" to setMacros.value?.protein,       // g
+        "tluszcz" to setMacros.value?.fat,      // g
+        "weglowodany" to setMacros.value?.carbohydrates  // g
     )
 
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
@@ -34,7 +36,7 @@ fun DayCalorieScreen(navController: NavController, localDate: LocalDate) {
         nutrientValues.value?.let { nutrients ->
             recommendedDailyIntake.forEach { (nutrient, rdi) ->
                 val consumed = nutrients[nutrient] ?: 0.0
-                val percentage = (consumed / rdi * 100) // No cap for percentage here
+                val percentage = (consumed / rdi!! * 100) // No cap for percentage here
 
                 Column(modifier = Modifier.padding(vertical = 8.dp)) {
                     Text(
@@ -67,6 +69,11 @@ fun DayCalorieScreen(navController: NavController, localDate: LocalDate) {
             }
         }
 
+        Button(onClick = {
+            navController.navigate(Screens.ChangeMacrosScreen.route) // Navigate to the AddMealScreen
+        }){
+            Text("Change Macros")
+        }
         // Add any other UI components or actions here
     }
 }

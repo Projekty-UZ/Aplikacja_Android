@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.aplikacja_android.ui.screens.AddRecipeScreen
 import com.example.aplikacja_android.ui.screens.CalendarScreen
+import com.example.aplikacja_android.ui.screens.ChangeMacrosScreen
 import com.example.aplikacja_android.ui.screens.CreateShoppingListFromTemplateScreen
 import com.example.aplikacja_android.ui.screens.CreateShoppingListScreen
 import com.example.aplikacja_android.ui.screens.DayCalorieScreen
@@ -131,6 +132,9 @@ fun Navigation(navcontroller:NavHostController){
 
             // Pass the nutrients to the DayCalorieScreen Composable
             DayCalorieScreen(navController = navcontroller,localDate = localDate)
+        }
+        composable(Screens.ChangeMacrosScreen.route) {
+            ChangeMacrosScreen(navController = navcontroller)
         }
     }
 }

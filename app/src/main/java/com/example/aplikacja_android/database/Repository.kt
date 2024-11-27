@@ -3,6 +3,7 @@ package com.example.aplikacja_android.database
 import androidx.lifecycle.LiveData
 import com.example.aplikacja_android.database.dao.CalendarMealDao
 import com.example.aplikacja_android.database.dao.IgredientDao
+import com.example.aplikacja_android.database.dao.MacrosDao
 import com.example.aplikacja_android.database.dao.NoteDao
 import com.example.aplikacja_android.database.dao.RecipeDao
 import com.example.aplikacja_android.database.dao.RecipeIgredientCrossRefDao
@@ -12,6 +13,7 @@ import com.example.aplikacja_android.database.dao.TipDao
 import com.example.aplikacja_android.database.dao.UnitDao
 import com.example.aplikacja_android.database.models.CalendarMeal
 import com.example.aplikacja_android.database.models.Igredient
+import com.example.aplikacja_android.database.models.Macros
 import com.example.aplikacja_android.database.models.Note
 import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
@@ -29,7 +31,8 @@ class Repository(
     private val shoppingListDao: ShoppingListDao,
     private val shoppingItemDao: ShoppingItemDao,
     private val tipDao: TipDao,
-    private val noteDao: NoteDao
+    private val noteDao: NoteDao,
+    private val macrosDao: MacrosDao
 ) {
     // Recipe and Ingredient methods
     val recipes = recipeDao.getAllRecipes()
@@ -37,6 +40,7 @@ class Repository(
     val units = unitDao.getAllUnits()
     val shoppingLists = shoppingListDao.getAllShoppingLists()
     val tips = tipDao.getAllTips()
+    val macros = macrosDao.getMacros()
 
     suspend fun createMeasurementUnit(unit: Unit) = unitDao.insert(unit)
 
@@ -123,4 +127,6 @@ class Repository(
     fun getNotesByRecipeId(recipeId: Int): LiveData<List<Note>> {
         return noteDao.getNotesByRecipeId(recipeId)
     }
+    //macros methods
+    suspend fun updateMacros(macros: Macros) = macrosDao.insertOrUpdate(macros)
 }

@@ -32,4 +32,5 @@ sealed class Screens (val route:String){
             return "dayCalorieScreen/$day/$month/$year"
         }
     }
+    object ChangeMacrosScreen: Screens("changeMacrosScreen")
 }

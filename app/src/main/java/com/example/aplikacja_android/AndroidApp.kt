@@ -17,5 +17,6 @@ class AndroidApp : Application(){
         database.shoppingListDao(),
         database.shoppingItemDao(),
         database.tipDao(),
-        database.noteDao()) }
+        database.noteDao(),
+        database.macrosDao()) }
 }
