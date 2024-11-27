@@ -10,11 +10,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.ui.screens.AddRecipeScreen
 import com.example.aplikacja_android.ui.screens.CalendarScreen
 import com.example.aplikacja_android.ui.screens.CreateShoppingListFromTemplateScreen
 import com.example.aplikacja_android.ui.screens.CreateShoppingListScreen
+import com.example.aplikacja_android.ui.screens.DayCalorieScreen
 import com.example.aplikacja_android.ui.screens.EditRecipeScreen
 import com.example.aplikacja_android.ui.screens.EditShoppingListScreen
 import com.example.aplikacja_android.ui.screens.IngredientListScreen
@@ -24,6 +24,7 @@ import com.example.aplikacja_android.ui.screens.RecipeWeekList
 import com.example.aplikacja_android.ui.screens.ShoppingListScreen
 import com.example.aplikacja_android.ui.screens.TipScreen
 import com.example.aplikacja_android.ui.viewModels.LocalDatabaseViewModel
+import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -113,6 +114,23 @@ fun Navigation(navcontroller:NavHostController){
         }
         composable(Screens.TipScreen.route){
             TipScreen(navController = navcontroller)
+        }
+        composable(
+            route = Screens.DayCalorieScreen.route,
+            arguments = listOf(
+                navArgument("day") { type = NavType.IntType },
+                navArgument("month") { type = NavType.IntType },
+                navArgument("year") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val day = backStackEntry.arguments?.getInt("day") ?: 1
+            val month = backStackEntry.arguments?.getInt("month") ?: 1
+            val year = backStackEntry.arguments?.getInt("year") ?: 2024
+
+            val localDate = LocalDate.of(year, month, day)
+
+            // Pass the nutrients to the DayCalorieScreen Composable
+            DayCalorieScreen(navController = navcontroller,localDate = localDate)
         }
     }
 }

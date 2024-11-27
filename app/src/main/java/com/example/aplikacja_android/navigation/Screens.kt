@@ -27,4 +27,9 @@ sealed class Screens (val route:String){
         fun createRoute(listID:Int) = "shoppingList/${listID}"
     }
     object TipScreen: Screens("tipScreen");
+    object DayCalorieScreen : Screens("dayCalorieScreen/{day}/{month}/{year}") {
+        fun createRoute(day: Int, month: Int, year: Int): String {
+            return "dayCalorieScreen/$day/$month/$year"
+        }
+    }
 }

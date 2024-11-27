@@ -87,6 +87,10 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
         return repository.getAllRecipesOfDate(localDate)
     }
 
+    fun getRecipesForDate(localDate: LocalDate): LiveData<List<Recipe>>{
+        return repository.getRecipesOfDate(localDate)
+    }
+
     suspend fun deleteAllRecipesOfDate(localDate: LocalDate){
         return repository.deleteAllRecipesOfDate(localDate)
     }
@@ -171,6 +175,72 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
                 }
             }
         }
+    }
+
+    fun sumNutrientsFromIngredients(ingredients: List<IngredientWithUnit>): Map<String, Double> {
+        val unitConversion = mapOf(
+            "g" to 1.0,
+            "ml" to 1.0,
+            "lyzeczka" to 5.0,
+            "lyzka" to 10.0
+        )
+
+        var totalKalorie = 0.0
+        var totalBialko = 0.0
+        var totalTluszcz = 0.0
+        var totalWeglowodany = 0.0
+
+        // Loop through all ingredients and sum up their nutrients
+        ingredients.forEach { ingredient ->
+            val weightInGrams = ingredient.ilosc * (unitConversion[ingredient.unit.jednostka] ?: 1.0)
+            val ingredientDetails = ingredient.ingredient
+
+            // Summing up the nutrients for each ingredient
+            totalKalorie += ingredientDetails.kalorie * (weightInGrams / 100.0)
+            totalBialko += ingredientDetails.bialko * (weightInGrams / 100.0)
+            totalTluszcz += ingredientDetails.tluszcz * (weightInGrams / 100.0)
+            totalWeglowodany += ingredientDetails.weglowodany * (weightInGrams / 100.0)
+        }
+
+        return mapOf(
+            "kalorie" to totalKalorie,
+            "bialko" to totalBialko,
+            "tluszcz" to totalTluszcz,
+            "weglowodany" to totalWeglowodany
+        )
+    }
+
+    fun calculateDayNutrients(localDate: LocalDate): LiveData<Map<String, Double>>{
+        val nutrientValues = MutableLiveData<Map<String, Double>>()
+
+        viewModelScope.launch {
+            val recipes = getRecipesForDate(localDate).asFlow().firstOrNull() ?: emptyList()
+            if (recipes.isNotEmpty()) {
+                val allIngredients = mutableListOf<IngredientWithUnit>()
+
+                recipes.forEach { recipe ->
+                    val ingredients = getIngredientsOfRecipe(recipe.id).asFlow().firstOrNull() ?: emptyList()
+                    allIngredients.addAll(ingredients)
+                }
+
+                // Now sum the nutrients
+                nutrientValues.value = sumNutrientsFromIngredients(allIngredients)
+            }
+        }
+
+        return nutrientValues
+    }
+
+    fun calculateRecipeNutrients(recipeId: Int): LiveData<Map<String, Double>>{
+        val nutrientValues = MutableLiveData<Map<String, Double>>()
+        val allIngredients = mutableListOf<IngredientWithUnit>()
+        getIngredientsOfRecipe(recipeId).observeForever { ingredients ->
+            if (ingredients != null) {
+                allIngredients.addAll(ingredients)
+            }
+            nutrientValues.value = sumNutrientsFromIngredients(allIngredients)
+        }
+        return nutrientValues
     }
 }
 class DatabaseViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory {

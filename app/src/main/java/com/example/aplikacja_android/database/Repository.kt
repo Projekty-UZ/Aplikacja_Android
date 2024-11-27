@@ -66,6 +66,9 @@ class Repository(
     suspend fun getAllRecipesOfDate(localDate: LocalDate) =
         calendarMealDao.getMealsByDate(localDate)
 
+    fun  getRecipesOfDate(localDate: LocalDate) =
+        calendarMealDao.getRecipesForDate(localDate)
+
     suspend fun deleteAllRecipesOfDate(localDate: LocalDate) =
         calendarMealDao.deleteAllRecipesFromDate(localDate)
 

@@ -8,5 +8,9 @@ data class Igredient(
     @PrimaryKey(autoGenerate = true) val id: Int=0,
     val nazwa:String,
     val kategoria: String,
-    val isAvailableAtHome: Boolean = false
-)
+    val isAvailableAtHome: Boolean = false,
+    val kalorie : Double,
+    val bialko: Double,
+    val tluszcz: Double,
+    val weglowodany: Double
+    )

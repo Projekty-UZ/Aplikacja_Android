@@ -60,7 +60,7 @@ fun AddRecipeScreen(navController: NavController){
     var recipeType by remember { mutableStateOf("") }
     var recipeInstruction by remember { mutableStateOf("") }
 
-    var recipeIngredientList by remember { mutableStateOf(mutableListOf(IngredientWithUnit(ingredient = Igredient(0,"",""), unit = Unit(0,""), ilosc = 0))) }
+    var recipeIngredientList by remember { mutableStateOf(mutableListOf(IngredientWithUnit(ingredient = Igredient(0,"","",false,0.0,0.0,0.0,0.0),unit = Unit(0,""), ilosc = 0))) }
 
     var errorMessege by remember { mutableStateOf<String?>(null) }
 
@@ -205,7 +205,7 @@ fun AddRecipeScreen(navController: NavController){
         Button(
             onClick = {
                 recipeIngredientList = recipeIngredientList.toMutableList().apply {
-                    add(IngredientWithUnit(Igredient(0,"",""), Unit(0, ""), ilosc = 0))
+                    add(IngredientWithUnit(Igredient(0,"","",false,0.0,0.0,0.0,0.0), Unit(0, ""), ilosc = 0))
                 }
             }
         ) {

@@ -29,6 +29,9 @@ fun RecipeScreen(recipe: Recipe,navController: NavController){
     val scrollState = rememberScrollState()
     val databaseViewModel = LocalDatabaseViewModel.current
     val recipeIngredients = databaseViewModel.getIngredientsOfRecipe(recipe.id).observeAsState(emptyList())
+    val nutrientValues = databaseViewModel.calculateRecipeNutrients(recipe.id).observeAsState(emptyMap())
+
+
 
     Column (
         modifier = Modifier.
@@ -43,6 +46,15 @@ fun RecipeScreen(recipe: Recipe,navController: NavController){
         recipeIngredients.value.forEach{ ingredient ->
             Text(text= ingredient.ingredient.nazwa+","+ingredient.ilosc+","+ingredient.unit.jednostka)
         }
+
+        nutrientValues.value.let { nutrients ->
+            Text(text = "Total Nutritional Values:")
+            Text(text = "Kalorie: ${"%.2f".format(nutrients["kalorie"] ?: 0.0)} kcal")
+            Text(text = "Białko: ${"%.2f".format(nutrients["bialko"] ?: 0.0)} g")
+            Text(text = "Tłuszcz: ${"%.2f".format(nutrients["tluszcz"] ?: 0.0)} g")
+            Text(text = "Węglowodany: ${"%.2f".format(nutrients["weglowodany"] ?: 0.0)} g")
+        }
+
     }
     FloatingActionButton(
         modifier = Modifier.padding(300.dp,650.dp,0.dp,0.dp),
