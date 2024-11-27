@@ -3,6 +3,7 @@ package com.example.aplikacja_android.database
 import androidx.lifecycle.LiveData
 import com.example.aplikacja_android.database.dao.CalendarMealDao
 import com.example.aplikacja_android.database.dao.IgredientDao
+import com.example.aplikacja_android.database.dao.NoteDao
 import com.example.aplikacja_android.database.dao.RecipeDao
 import com.example.aplikacja_android.database.dao.RecipeIgredientCrossRefDao
 import com.example.aplikacja_android.database.dao.ShoppingItemDao
@@ -11,13 +12,13 @@ import com.example.aplikacja_android.database.dao.TipDao
 import com.example.aplikacja_android.database.dao.UnitDao
 import com.example.aplikacja_android.database.models.CalendarMeal
 import com.example.aplikacja_android.database.models.Igredient
+import com.example.aplikacja_android.database.models.Note
 import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
 import com.example.aplikacja_android.database.models.ShoppingItem
 import com.example.aplikacja_android.database.models.ShoppingList
 import com.example.aplikacja_android.database.models.Unit
 import java.time.LocalDate
-import java.util.Date
 
 class Repository(
     private val igredientDao: IgredientDao,
@@ -27,7 +28,8 @@ class Repository(
     private val calendarMealDao: CalendarMealDao,
     private val shoppingListDao: ShoppingListDao,
     private val shoppingItemDao: ShoppingItemDao,
-    private val tipDao: TipDao
+    private val tipDao: TipDao,
+    private val noteDao: NoteDao
 ) {
     // Recipe and Ingredient methods
     val recipes = recipeDao.getAllRecipes()
@@ -109,5 +111,16 @@ class Repository(
     // Metoda do oznaczania składnika jako dostępnego w domu
     suspend fun updateIngredientAvailability(ingredientId: Int, isAvailableAtHome: Boolean) {
         igredientDao.updateIngredientAvailability(ingredientId, isAvailableAtHome)
+    }
+
+    //note methods
+    suspend fun createNote(note: Note)=
+        noteDao.insertNote(note)
+
+    suspend fun deleteNote(note: Note)=
+        noteDao.deleteNote(note)
+
+    fun getNotesByRecipeId(recipeId: Int): LiveData<List<Note>> {
+        return noteDao.getNotesByRecipeId(recipeId)
     }
 }

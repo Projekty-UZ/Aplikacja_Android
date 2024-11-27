@@ -1,7 +1,6 @@
 package com.example.aplikacja_android.ui.viewModels
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.LiveData
@@ -14,6 +13,7 @@ import com.example.aplikacja_android.database.Repository
 import com.example.aplikacja_android.database.dao.IngredientWithUnit
 import com.example.aplikacja_android.database.models.CalendarMeal
 import com.example.aplikacja_android.database.models.Igredient
+import com.example.aplikacja_android.database.models.Note
 import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
 import com.example.aplikacja_android.database.models.ShoppingItem
@@ -21,11 +21,9 @@ import com.example.aplikacja_android.database.models.ShoppingList
 import com.example.aplikacja_android.database.models.Tip
 import com.example.aplikacja_android.database.models.Unit
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.util.Date
 
 class DatabaseViewModel(private val repository:Repository):ViewModel() {
     val allIgredients:LiveData<List<Igredient>> = repository.igredients
@@ -36,7 +34,6 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
 
     val selectedRecipe = MutableLiveData<Recipe?>()
     val selectedList = MutableLiveData<ShoppingList?>()
-
 
 
     fun selectRecipe(recipe: Recipe){
@@ -140,6 +137,16 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
     // Mark ingredient as available at home
     suspend fun updateIngredientAvailability(ingredientId: Int, isAvailableAtHome: Boolean) {
         repository.updateIngredientAvailability(ingredientId, isAvailableAtHome)
+    }
+    //note methods
+    suspend fun insertNoteForRecipe(note: Note){
+        repository.createNote(note)
+    }
+    suspend fun deleteNoteForRecipe(note: Note){
+        repository.deleteNote(note)
+    }
+    fun getNotesForRecipe(recipeId: Int): LiveData<List<Note>>{
+        return repository.getNotesByRecipeId(recipeId)
     }
     // Generate shopping list based on planned meals for a date range
     @RequiresApi(Build.VERSION_CODES.O)

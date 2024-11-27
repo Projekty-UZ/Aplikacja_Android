@@ -16,5 +16,6 @@ class AndroidApp : Application(){
         database.calendarMealDao(),
         database.shoppingListDao(),
         database.shoppingItemDao(),
-        database.tipDao()) }
+        database.tipDao(),
+        database.noteDao()) }
 }

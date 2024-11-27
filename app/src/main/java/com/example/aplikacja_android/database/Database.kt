@@ -1,7 +1,6 @@
 package com.example.aplikacja_android.database
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -10,6 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.aplikacja_android.database.converters.DateConverter
 import com.example.aplikacja_android.database.dao.CalendarMealDao
 import com.example.aplikacja_android.database.dao.IgredientDao
+import com.example.aplikacja_android.database.dao.NoteDao
 import com.example.aplikacja_android.database.dao.RecipeDao
 import com.example.aplikacja_android.database.dao.RecipeIgredientCrossRefDao
 import com.example.aplikacja_android.database.dao.ShoppingItemDao
@@ -18,6 +18,7 @@ import com.example.aplikacja_android.database.dao.TipDao
 import com.example.aplikacja_android.database.dao.UnitDao
 import com.example.aplikacja_android.database.models.CalendarMeal
 import com.example.aplikacja_android.database.models.Igredient
+import com.example.aplikacja_android.database.models.Note
 import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
 import com.example.aplikacja_android.database.models.ShoppingItem
@@ -36,7 +37,8 @@ import kotlinx.coroutines.launch
     CalendarMeal::class,
     ShoppingList::class,
     ShoppingItem::class,
-    Tip::class
+    Tip::class,
+    Note::class
                      ], version = 4, exportSchema = false)
 @TypeConverters(DateConverter::class)
 abstract  class AppDatabase: RoomDatabase(){
@@ -48,6 +50,7 @@ abstract  class AppDatabase: RoomDatabase(){
     abstract fun shoppingListDao(): ShoppingListDao
     abstract fun shoppingItemDao(): ShoppingItemDao
     abstract fun tipDao(): TipDao
+    abstract fun noteDao(): NoteDao
     companion object{
         @Volatile
         private var INSTANCE: AppDatabase? = null
