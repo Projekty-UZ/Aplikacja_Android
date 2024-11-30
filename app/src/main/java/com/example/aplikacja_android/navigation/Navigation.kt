@@ -18,6 +18,7 @@ import com.example.aplikacja_android.ui.screens.CreateShoppingListScreen
 import com.example.aplikacja_android.ui.screens.DayCalorieScreen
 import com.example.aplikacja_android.ui.screens.EditRecipeScreen
 import com.example.aplikacja_android.ui.screens.EditShoppingListScreen
+import com.example.aplikacja_android.ui.screens.HealthScreen
 import com.example.aplikacja_android.ui.screens.IngredientListScreen
 import com.example.aplikacja_android.ui.screens.RecipeListScreen
 import com.example.aplikacja_android.ui.screens.RecipeScreen
@@ -135,6 +136,9 @@ fun Navigation(navcontroller:NavHostController){
         }
         composable(Screens.ChangeMacrosScreen.route) {
             ChangeMacrosScreen(navController = navcontroller)
+        }
+        composable(Screens.HealthScreen.route) {
+            HealthScreen(navController = navcontroller)
         }
     }
 }

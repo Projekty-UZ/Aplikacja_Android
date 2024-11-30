@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
@@ -28,7 +29,7 @@ fun BottomNavBar(
         items.forEach{item->
             NavigationBarItem(
                 label = {
-                    Text(text = item.name)
+                    Text(text = item.name, fontSize = 10.sp)
                 },
                 selected = item.route == backStackEntry.value?.destination?.route,
                 onClick = { onItemClick(item) },

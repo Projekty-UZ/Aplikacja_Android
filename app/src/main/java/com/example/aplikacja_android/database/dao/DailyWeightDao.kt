@@ -19,4 +19,7 @@ interface DailyWeightDao {
     @Query("SELECT * FROM daily_weights ORDER BY date DESC LIMIT 1")
     fun getLastDailyWeight(): LiveData<DailyWeight>
 
+    @Query("SELECT * FROM daily_weights WHERE date BETWEEN :startDate AND :endDate ORDER BY date")
+    fun getDailyWeightsForMonth(startDate: LocalDate, endDate: LocalDate): LiveData<List<DailyWeight>>
+
 }

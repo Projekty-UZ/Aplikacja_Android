@@ -96,6 +96,11 @@ class MainActivity : ComponentActivity() {
                                         Screens.TipScreen.route,
                                         "Porady",
                                         painterResource(id = R.drawable.ingredient)
+                                    ),
+                                    BottomNavItem(
+                                        Screens.HealthScreen.route,
+                                        "Zdrowie",
+                                        painterResource(id = R.drawable.health)
                                     )
                                 ),
                                 navController = navController,

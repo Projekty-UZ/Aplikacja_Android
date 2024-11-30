@@ -205,6 +205,14 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
     fun getLastDailyWeight(): LiveData<DailyWeight>{
         return repository.getLastDailyWeight()
     }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getWeightsForCurrentMonth(): LiveData<List<DailyWeight>> {
+        val currentDate = LocalDate.now()
+        val firstDayOfMonth = currentDate.withDayOfMonth(1)
+        val lastDayOfMonth = currentDate.withDayOfMonth(currentDate.lengthOfMonth())
+
+        return repository.getDailyWeightsForMonth(firstDayOfMonth, lastDayOfMonth)
+    }
 
 
 

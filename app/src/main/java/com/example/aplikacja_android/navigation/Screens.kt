@@ -31,4 +31,5 @@ sealed class Screens (val route:String){
         }
     }
     object ChangeMacrosScreen: Screens("changeMacrosScreen")
+    object HealthScreen: Screens("healthScreen")
 }

@@ -178,6 +178,9 @@ class Repository(
     fun getLastDailyWeight(): LiveData<DailyWeight> {
         return dailyWeightDao.getLastDailyWeight()
     }
+    fun getDailyWeightsForMonth(startDate: LocalDate, endDate: LocalDate): LiveData<List<DailyWeight>> {
+        return dailyWeightDao.getDailyWeightsForMonth(startDate, endDate)
+    }
 
 
 
