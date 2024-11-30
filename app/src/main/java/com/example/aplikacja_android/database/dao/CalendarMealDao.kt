@@ -8,7 +8,6 @@ import androidx.room.Query
 import com.example.aplikacja_android.database.models.CalendarMeal
 import com.example.aplikacja_android.database.models.Recipe
 import java.time.LocalDate
-import java.util.Date
 
 @Dao
 interface CalendarMealDao {

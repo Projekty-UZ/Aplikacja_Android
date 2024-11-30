@@ -7,7 +7,13 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.aplikacja_android.database.converters.DateConverter
+import com.example.aplikacja_android.database.dao.ActivityDao
+import com.example.aplikacja_android.database.dao.ActivityTypeDao
+import com.example.aplikacja_android.database.dao.BloodPressureMeasurmentsDao
+import com.example.aplikacja_android.database.dao.BloodSugarMeasurmentDao
+import com.example.aplikacja_android.database.dao.BodyMeasurementsDao
 import com.example.aplikacja_android.database.dao.CalendarMealDao
+import com.example.aplikacja_android.database.dao.DailyWeightDao
 import com.example.aplikacja_android.database.dao.IgredientDao
 import com.example.aplikacja_android.database.dao.MacrosDao
 import com.example.aplikacja_android.database.dao.NoteDao
@@ -22,11 +28,17 @@ import com.example.aplikacja_android.database.models.Igredient
 import com.example.aplikacja_android.database.models.Macros
 import com.example.aplikacja_android.database.models.Note
 import com.example.aplikacja_android.database.models.Recipe
+import com.example.aplikacja_android.database.models.Unit
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
 import com.example.aplikacja_android.database.models.ShoppingItem
 import com.example.aplikacja_android.database.models.ShoppingList
 import com.example.aplikacja_android.database.models.Tip
-import com.example.aplikacja_android.database.models.Unit
+import com.example.aplikacja_android.database.models.Activity
+import com.example.aplikacja_android.database.models.ActivityType
+import com.example.aplikacja_android.database.models.BloodPressureMeasurement
+import com.example.aplikacja_android.database.models.BloodSugarMeasurement
+import com.example.aplikacja_android.database.models.BodyMeasurements
+import com.example.aplikacja_android.database.models.DailyWeight
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -41,7 +53,13 @@ import kotlinx.coroutines.launch
     ShoppingItem::class,
     Tip::class,
     Note::class,
-    Macros::class
+    Macros::class,
+    Activity::class,
+    ActivityType::class,
+    BodyMeasurements::class,
+    BloodPressureMeasurement::class,
+    BloodSugarMeasurement::class,
+    DailyWeight::class
                      ], version = 4, exportSchema = false)
 @TypeConverters(DateConverter::class)
 abstract  class AppDatabase: RoomDatabase(){
@@ -55,6 +73,12 @@ abstract  class AppDatabase: RoomDatabase(){
     abstract fun tipDao(): TipDao
     abstract fun noteDao(): NoteDao
     abstract fun macrosDao(): MacrosDao
+    abstract fun activityDao(): ActivityDao
+    abstract fun activityTypeDao(): ActivityTypeDao
+    abstract fun bodyMeasurementsDao(): BodyMeasurementsDao
+    abstract fun bloodPressureMeasurementDao(): BloodPressureMeasurmentsDao
+    abstract fun bloodSugarMeasurementDao(): BloodSugarMeasurmentDao
+    abstract fun dailyWeightDao(): DailyWeightDao
     companion object{
         @Volatile
         private var INSTANCE: AppDatabase? = null
@@ -147,14 +171,27 @@ suspend fun prepopulateDatabase(database: AppDatabase) {
         Tip(ingredient = "bananas", tip = "Store bananas at room temperature, away from other fruits, to slow down ripening.")
     )
 
+    val initialActivityTypes = listOf(
+        ActivityType(name = "Running", caloriesPerMinute = 11.4),
+        ActivityType(name = "Cycling", caloriesPerMinute = 8.6),
+        ActivityType(name = "Swimming", caloriesPerMinute = 9.8),
+        ActivityType(name = "Walking", caloriesPerMinute = 5.0),
+        ActivityType(name = "Yoga", caloriesPerMinute = 2.5),
+        ActivityType(name = "Weightlifting", caloriesPerMinute = 3.0),
+        ActivityType(name = "Dancing", caloriesPerMinute = 6.0),
+        ActivityType(name = "Hiking", caloriesPerMinute = 6.0),
+        ActivityType(name = "Pilates", caloriesPerMinute = 3.0),
+        ActivityType(name = "Rowing", caloriesPerMinute = 7.0)
+    )
+
     // Insert each ingredient individually
     initialIngredients.forEach { ingredient ->
         database.igredientDao().insert(ingredient)
     }
 
     // Insert each unit individually
-    initialUnits.forEach { unit ->
-        database.unitDao().insert(unit)
+    initialUnits.forEach { units ->
+        database.unitDao().insert(units)
     }
 
     // Insert each tip individually
@@ -162,5 +199,11 @@ suspend fun prepopulateDatabase(database: AppDatabase) {
         database.tipDao().insertTip(tip)
     }
 
+    // Insert each activity type individually
+    initialActivityTypes.forEach { activityType ->
+        database.activityTypeDao().insert(activityType)
+    }
+
     database.macrosDao().insertOrUpdate(Macros(0, 2000.0, 50.0, 70.0, 300.0))
+    database.bodyMeasurementsDao().insert(BodyMeasurements(0, 180.0, 80.0, 100.0, 90.0, 50.0, 30.0, 40.0))
 }

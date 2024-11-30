@@ -13,6 +13,7 @@ roomKtx = "2.6.1"
 navigationCompose = "2.8.2"
 devtools = "2.0.0-1.0.21"
 runtimeLivedata = "1.7.3"
+charts = "0.2.4-alpha"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -35,6 +36,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomKtx"}
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.6.3" }
+compose-charts = { group = "com.github.tehras", name = "charts", version.ref = "charts" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

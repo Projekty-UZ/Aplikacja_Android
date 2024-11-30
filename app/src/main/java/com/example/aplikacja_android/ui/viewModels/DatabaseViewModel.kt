@@ -11,16 +11,22 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.example.aplikacja_android.database.Repository
 import com.example.aplikacja_android.database.dao.IngredientWithUnit
+import com.example.aplikacja_android.database.models.Activity
+import com.example.aplikacja_android.database.models.ActivityType
+import com.example.aplikacja_android.database.models.BloodPressureMeasurement
+import com.example.aplikacja_android.database.models.BloodSugarMeasurement
+import com.example.aplikacja_android.database.models.BodyMeasurements
 import com.example.aplikacja_android.database.models.CalendarMeal
+import com.example.aplikacja_android.database.models.DailyWeight
 import com.example.aplikacja_android.database.models.Igredient
 import com.example.aplikacja_android.database.models.Macros
 import com.example.aplikacja_android.database.models.Note
 import com.example.aplikacja_android.database.models.Recipe
+import com.example.aplikacja_android.database.models.Unit
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
 import com.example.aplikacja_android.database.models.ShoppingItem
 import com.example.aplikacja_android.database.models.ShoppingList
 import com.example.aplikacja_android.database.models.Tip
-import com.example.aplikacja_android.database.models.Unit
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -32,6 +38,7 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
     val allUnits: LiveData<List<Unit>> = repository.units
     val allShoppingList: LiveData<List<ShoppingList>> = repository.shoppingLists
     val allTips: LiveData<List<Tip>> = repository.tips
+    val allActivityTypes: LiveData<List<ActivityType>> = repository.activityTypes
 
     val selectedRecipe = MutableLiveData<Recipe?>()
     val selectedList = MutableLiveData<ShoppingList?>()
@@ -156,6 +163,51 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
     suspend fun updateMacros(macros: Macros){
         repository.updateMacros(macros)
     }
+    //body measurements methods
+    fun getBodyMeasurements(): LiveData<BodyMeasurements>{
+        return repository.bodyMeasurements
+    }
+    suspend fun updateBodyMeasurements(bodyMeasurements: BodyMeasurements){
+        repository.updateBodyMeasurements(bodyMeasurements)
+    }
+    //activity methods
+    suspend fun insertActivity(activity: Activity){
+        repository.createActivity(activity)
+    }
+    fun getActivitiesOfDate(localDate: LocalDate): LiveData<List<Activity>>{
+        return repository.getActivitiesByDate(localDate)
+    }
+    suspend fun deleteActivity(activity: Activity){
+        repository.deleteActivity(activity)
+    }
+    //blood sugar measurements methods
+    suspend fun insertBloodSugarMeasurement(bloodSugarMeasurement: BloodSugarMeasurement){
+        repository.createBloodSugarMeasurement(bloodSugarMeasurement)
+    }
+    fun getBloodSugarMeasurementByDate(date: LocalDate): LiveData<BloodSugarMeasurement>{
+        return repository.getBloodSugarMeasurementByDate(date)
+    }
+
+    //blood pressure measurements methods
+    suspend fun insertBloodPressureMeasurement(bloodPressureMeasurement: BloodPressureMeasurement){
+        repository.createBloodPressureMeasurement(bloodPressureMeasurement)
+    }
+    fun getBloodPressureMeasurementByDate(date: LocalDate): LiveData<BloodPressureMeasurement>{
+        return repository.getBloodPressureMeasurementByDate(date)
+    }
+    //daily weight methods
+    suspend fun insertDailyWeight(dailyWeight: DailyWeight){
+        repository.createDailyWeight(dailyWeight)
+    }
+    fun getDailyWeightByDate(date: LocalDate): LiveData<DailyWeight>{
+        return repository.getDailyWeightByDate(date)
+    }
+    fun getLastDailyWeight(): LiveData<DailyWeight>{
+        return repository.getLastDailyWeight()
+    }
+
+
+
     // Generate shopping list based on planned meals for a date range
     @RequiresApi(Build.VERSION_CODES.O)
     fun generateShoppingListForDateRange(startDate: LocalDate, endDate: LocalDate) {

@@ -7,7 +7,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.aplikacja_android.database.models.Igredient
 import com.example.aplikacja_android.database.models.Unit
 
 @Dao

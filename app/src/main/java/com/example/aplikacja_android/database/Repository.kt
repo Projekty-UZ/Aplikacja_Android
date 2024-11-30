@@ -1,7 +1,13 @@
 package com.example.aplikacja_android.database
 
 import androidx.lifecycle.LiveData
+import com.example.aplikacja_android.database.dao.ActivityDao
+import com.example.aplikacja_android.database.dao.ActivityTypeDao
+import com.example.aplikacja_android.database.dao.BloodPressureMeasurmentsDao
+import com.example.aplikacja_android.database.dao.BloodSugarMeasurmentDao
+import com.example.aplikacja_android.database.dao.BodyMeasurementsDao
 import com.example.aplikacja_android.database.dao.CalendarMealDao
+import com.example.aplikacja_android.database.dao.DailyWeightDao
 import com.example.aplikacja_android.database.dao.IgredientDao
 import com.example.aplikacja_android.database.dao.MacrosDao
 import com.example.aplikacja_android.database.dao.NoteDao
@@ -11,15 +17,20 @@ import com.example.aplikacja_android.database.dao.ShoppingItemDao
 import com.example.aplikacja_android.database.dao.ShoppingListDao
 import com.example.aplikacja_android.database.dao.TipDao
 import com.example.aplikacja_android.database.dao.UnitDao
+import com.example.aplikacja_android.database.models.Activity
+import com.example.aplikacja_android.database.models.BloodPressureMeasurement
+import com.example.aplikacja_android.database.models.BloodSugarMeasurement
+import com.example.aplikacja_android.database.models.BodyMeasurements
 import com.example.aplikacja_android.database.models.CalendarMeal
+import com.example.aplikacja_android.database.models.DailyWeight
 import com.example.aplikacja_android.database.models.Igredient
 import com.example.aplikacja_android.database.models.Macros
 import com.example.aplikacja_android.database.models.Note
+import com.example.aplikacja_android.database.models.Unit
 import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
 import com.example.aplikacja_android.database.models.ShoppingItem
 import com.example.aplikacja_android.database.models.ShoppingList
-import com.example.aplikacja_android.database.models.Unit
 import java.time.LocalDate
 
 class Repository(
@@ -32,7 +43,13 @@ class Repository(
     private val shoppingItemDao: ShoppingItemDao,
     private val tipDao: TipDao,
     private val noteDao: NoteDao,
-    private val macrosDao: MacrosDao
+    private val macrosDao: MacrosDao,
+    private val activityDao: ActivityDao,
+    private val activityTypeDao: ActivityTypeDao,
+    private val bodyMeasurementsDao: BodyMeasurementsDao,
+    private val bloodSugarMeasurementDao: BloodSugarMeasurmentDao,
+    private val bloodPressureMeasurmentsDao: BloodPressureMeasurmentsDao,
+    private val dailyWeightDao: DailyWeightDao
 ) {
     // Recipe and Ingredient methods
     val recipes = recipeDao.getAllRecipes()
@@ -41,6 +58,8 @@ class Repository(
     val shoppingLists = shoppingListDao.getAllShoppingLists()
     val tips = tipDao.getAllTips()
     val macros = macrosDao.getMacros()
+    val bodyMeasurements = bodyMeasurementsDao.getBodyMeasurements()
+    val activityTypes = activityTypeDao.getAllActivityType()
 
     suspend fun createMeasurementUnit(unit: Unit) = unitDao.insert(unit)
 
@@ -129,4 +148,37 @@ class Repository(
     }
     //macros methods
     suspend fun updateMacros(macros: Macros) = macrosDao.insertOrUpdate(macros)
+    //body measurements methods
+    suspend fun updateBodyMeasurements(bodyMeasurements: BodyMeasurements) = bodyMeasurementsDao.insert(bodyMeasurements)
+    //blood sugar measurements methods
+    suspend fun createBloodSugarMeasurement(bloodSugarMeasurement: BloodSugarMeasurement) = bloodSugarMeasurementDao.insert(bloodSugarMeasurement)
+
+    fun getBloodSugarMeasurementByDate(date: LocalDate): LiveData<BloodSugarMeasurement> {
+        return bloodSugarMeasurementDao.getMeasurementsByDate(date)
+    }
+
+    //blood pressure measurements methods
+    suspend fun createBloodPressureMeasurement(bloodPressureMeasurement: BloodPressureMeasurement) = bloodPressureMeasurmentsDao.insert(bloodPressureMeasurement)
+
+    fun getBloodPressureMeasurementByDate(date: LocalDate): LiveData<BloodPressureMeasurement> {
+        return bloodPressureMeasurmentsDao.getMeasurementsByDate(date)
+    }
+
+    //activity methods
+    suspend fun createActivity(activity: Activity) = activityDao.insert(activity)
+    suspend fun deleteActivity(activity: Activity) = activityDao.delete(activity)
+    fun getActivitiesByDate(date: LocalDate): LiveData<List<Activity>> {
+        return activityDao.getActivitiesByDate(date)
+    }
+    //daily weight methods
+    suspend fun createDailyWeight(dailyWeight: DailyWeight) = dailyWeightDao.insertDailyWeight(dailyWeight)
+    fun getDailyWeightByDate(date: LocalDate): LiveData<DailyWeight> {
+        return dailyWeightDao.getDailyWeightByDate(date)
+    }
+    fun getLastDailyWeight(): LiveData<DailyWeight> {
+        return dailyWeightDao.getLastDailyWeight()
+    }
+
+
+
 }

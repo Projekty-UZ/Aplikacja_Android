@@ -18,5 +18,11 @@ class AndroidApp : Application(){
         database.shoppingItemDao(),
         database.tipDao(),
         database.noteDao(),
-        database.macrosDao()) }
+        database.macrosDao(),
+        database.activityDao(),
+        database.activityTypeDao(),
+        database.bodyMeasurementsDao(),
+        database.bloodSugarMeasurementDao(),
+        database.bloodPressureMeasurementDao(),
+        database.dailyWeightDao()) }
 }

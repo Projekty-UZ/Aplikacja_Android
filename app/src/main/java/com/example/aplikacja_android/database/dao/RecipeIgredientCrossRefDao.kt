@@ -10,8 +10,8 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.aplikacja_android.database.models.Igredient
 import com.example.aplikacja_android.database.models.Recipe
-import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
 import com.example.aplikacja_android.database.models.Unit
+import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
 
 @Dao
 interface RecipeIgredientCrossRefDao {

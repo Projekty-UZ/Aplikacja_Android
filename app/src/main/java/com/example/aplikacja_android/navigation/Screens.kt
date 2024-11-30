@@ -1,7 +1,5 @@
 package com.example.aplikacja_android.navigation
 
-import com.example.aplikacja_android.database.models.Recipe
-
 //przypisanie kazdego scrrenu aplikacji do obiektu
 sealed class Screens (val route:String){
     object AddRecipeScreen: Screens("addrecipe");
