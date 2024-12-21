@@ -1,6 +1,8 @@
 package com.example.aplikacja_android.ui.viewModels
 
+import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.LiveData
@@ -9,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
+import com.example.aplikacja_android.Notifications.scheduleReminder
 import com.example.aplikacja_android.database.Repository
 import com.example.aplikacja_android.database.dao.IngredientWithUnit
 import com.example.aplikacja_android.database.models.Activity
@@ -24,6 +27,8 @@ import com.example.aplikacja_android.database.models.Note
 import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.database.models.Unit
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
+import com.example.aplikacja_android.database.models.RecipeTags
+import com.example.aplikacja_android.database.models.Reminder
 import com.example.aplikacja_android.database.models.ShoppingItem
 import com.example.aplikacja_android.database.models.ShoppingList
 import com.example.aplikacja_android.database.models.Tip
@@ -31,6 +36,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.TextStyle
+import java.util.Locale
 
 class DatabaseViewModel(private val repository:Repository):ViewModel() {
     val allIgredients:LiveData<List<Igredient>> = repository.igredients
@@ -68,6 +76,10 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
         return repository.getSingleRecipe(id)
     }
 
+    fun getFavoriteRecipes(): LiveData<List<Recipe>> {
+        return repository.getFavoriteRecipes()
+    }
+
     fun getIngredientsOfRecipe(id: Int): LiveData<List<IngredientWithUnit>> {
         return repository.getIgredientsOfRecipe(id)
     }
@@ -99,6 +111,8 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
     suspend fun deleteAllRecipesOfDate(localDate: LocalDate){
         return repository.deleteAllRecipesOfDate(localDate)
     }
+
+
 
     suspend fun insertCalendarMeal(calendarMeal: CalendarMeal){
         return repository.saveCalendarMeal(calendarMeal)
@@ -316,6 +330,57 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
             nutrientValues.value = sumNutrientsFromIngredients(allIngredients)
         }
         return nutrientValues
+    }
+    //recipe tags methods
+    fun getTagsByRecipeId(recipeId: Int): LiveData<List<RecipeTags>>{
+        return repository.getTagsByRecipeId(recipeId)
+    }
+    suspend fun insertTag(tag: RecipeTags){
+        repository.addTag(tag)
+    }
+    suspend fun deleteTag(tag: RecipeTags) {
+        repository.deleteTag(tag)
+    }
+
+    // Reminder methods
+    suspend fun createReminder(reminder: Reminder): Reminder? {
+        val id = repository.createReminder(reminder)
+        return repository.getReminderById(id)
+    }
+
+    suspend fun getRemindersForDay(day: String): List<Reminder> {
+        return repository.getRemindersForDay(day)
+    }
+
+    fun scheduleReminder(context: Context, reminder: Reminder) {
+        viewModelScope.launch {
+            val delayInMinutes = calculateDelay(reminder.time)
+            if (delayInMinutes != null) {
+
+                scheduleReminder(
+                    context,
+                    reminder.title,
+                    reminder.description,
+                    delayInMinutes
+                )
+            }
+        }
+    }
+
+    // Calculates delay in minutes from the current time
+    private fun calculateDelay(time: String): Long? {
+        val currentTime = LocalTime.now()
+        val reminderTime = LocalTime.parse(time) // e.g., "08:30"
+
+        val minutesUntilReminder = java.time.Duration.between(currentTime, reminderTime).toMinutes()
+        return if (minutesUntilReminder > 0) minutesUntilReminder else null
+    }
+
+    // Returns the current day of the week as a string (e.g., "Monday")
+    private fun getCurrentDayOfWeek(): String {
+        return LocalDate.now()
+            .dayOfWeek
+            .getDisplayName(TextStyle.FULL, Locale.ENGLISH) // e.g., "Monday"
     }
 }
 class DatabaseViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory {

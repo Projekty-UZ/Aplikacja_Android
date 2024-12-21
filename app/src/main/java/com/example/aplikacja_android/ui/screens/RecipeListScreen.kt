@@ -45,26 +45,31 @@ fun RecipeListScreen(navController: NavController){
     val allIngredients = databaseViewModel.allIgredients.observeAsState(emptyList())
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    var recipesWithChosenIngredient by remember { mutableStateOf(mutableListOf<Recipe>(Recipe(0,"","",""))) }
+    var recipesWithChosenIngredient by remember { mutableStateOf(mutableListOf<Recipe>(Recipe(0,"","","",false))) }
     var isSortedAlphabetically by remember { mutableStateOf(false) }
     var isFilteredByIngredient by remember { mutableStateOf(false) }
+    var showFavoriteRecipes  by remember { mutableStateOf(false) }
 
 
     var chosenIngredient by remember { mutableStateOf<Igredient?>(null) }
     var expanded by remember { mutableStateOf(false) }
 
-    val displayedRecipes = if (isSortedAlphabetically) {
-        if(chosenIngredient !== null){
-            recipesWithChosenIngredient.sortedBy { it.nazwa }
-        }else {
-            allRecipes.value.sortedBy { it.nazwa }
-        }
+    val displayedRecipes =
+    if(showFavoriteRecipes){
+        allRecipes.value.filter { it.isFavorite }
     } else {
-        if(chosenIngredient !== null){
-            recipesWithChosenIngredient
-        }
-        else {
-            allRecipes.value
+        if (isSortedAlphabetically) {
+            if (chosenIngredient !== null) {
+                recipesWithChosenIngredient.sortedBy { it.nazwa }
+            } else {
+                allRecipes.value.sortedBy { it.nazwa }
+            }
+        } else {
+            if (chosenIngredient !== null) {
+                recipesWithChosenIngredient
+            } else {
+                allRecipes.value
+            }
         }
     }
 
@@ -144,6 +149,17 @@ fun RecipeListScreen(navController: NavController){
             contentDescription = "SortButton",
             modifier = Modifier.size(50.dp)
         )
+    }
+
+    FloatingActionButton(
+        modifier = Modifier.padding(200.dp,650.dp,0.dp,0.dp),
+        onClick = { showFavoriteRecipes = !showFavoriteRecipes },
+    ) {
+        if(showFavoriteRecipes){
+            Text(text="Show All")
+        } else {
+            Text(text="Show Favorites")
+        }
     }
 }
 

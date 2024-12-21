@@ -1,7 +1,9 @@
 package com.example.aplikacja_android.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,6 +34,7 @@ import com.example.aplikacja_android.database.models.Igredient
 import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.database.models.Unit
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
+import com.example.aplikacja_android.database.models.RecipeTags
 import com.example.aplikacja_android.navigation.Screens
 import com.example.aplikacja_android.ui.viewModels.DatabaseViewModel
 import com.example.aplikacja_android.ui.viewModels.LocalDatabaseViewModel
@@ -227,7 +230,8 @@ fun EditRecipeScreen(recipe:Recipe, navController: NavController) {
                         recipeName,
                         recipeType,
                         recipeInstruction,
-                        recipe.id
+                        recipe.id,
+                        recipe.isFavorite
                     )
                     navController.navigate(Screens.RecipeListScreen.route)
                 }
@@ -235,6 +239,7 @@ fun EditRecipeScreen(recipe:Recipe, navController: NavController) {
         ) {
             Text("Save")
         }
+
         Box(
             modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 100.dp),
             contentAlignment = Alignment.Center
@@ -251,10 +256,11 @@ fun editRecipe(
     name: String,
     type: String,
     instruction: String,
-    recipeId: Int
+    recipeId: Int,
+    isFavorite: Boolean
 ) {
     GlobalScope.launch {
-        databaseViewModel.updateRecipe(Recipe(id=recipeId,nazwa=name, rodzaj = type, instrukcja = instruction))
+        databaseViewModel.updateRecipe(Recipe(id=recipeId,nazwa=name, rodzaj = type, instrukcja = instruction, isFavorite = false))
 
         initial.value.forEach{ igredient ->
             databaseViewModel.deleteCrossRef(RecipeIgredientCrossRef(recipeId = recipeId,

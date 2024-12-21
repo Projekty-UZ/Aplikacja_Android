@@ -31,6 +31,10 @@ interface RecipeDao {
     @Query("SELECT * FROM RECIPES WHERE id=:id")
     fun getRecipe(id: Int): Recipe
 
+    //get only favorite
+    @Query("SELECT * FROM RECIPES WHERE isFavorite=1")
+    fun getFavoriteRecipes(): LiveData<List<Recipe>>
+
     @Transaction
     suspend fun deleteRecipeWithCrossRefs(recipe: Recipe) {
         deleteCrossRefsForRecipe(recipe.id)

@@ -1,6 +1,7 @@
 package com.example.aplikacja_android
 
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -19,6 +20,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.aplikacja_android.navigation.BottomNavBar
@@ -37,16 +40,23 @@ class MainActivity : ComponentActivity() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                0
+            )
+        }
         enableEdgeToEdge()
         setContent {
             Aplikacja_AndroidTheme {
                 CompositionLocalProvider(
                     LocalDatabaseViewModel provides databaseViewModel
                 ) {
+
                     var showMessage by remember { mutableStateOf(true) }
 
                     val context = LocalContext.current
@@ -101,6 +111,11 @@ class MainActivity : ComponentActivity() {
                                         Screens.HealthScreen.route,
                                         "Zdrowie",
                                         painterResource(id = R.drawable.health)
+                                    ),
+                                    BottomNavItem(
+                                        Screens.AddReminderScreen.route,
+                                        "Przypomnienia",
+                                        painterResource(id = R.drawable.bell)
                                     )
                                 ),
                                 navController = navController,
@@ -116,4 +131,5 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 }

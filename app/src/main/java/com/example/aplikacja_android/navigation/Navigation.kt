@@ -23,6 +23,7 @@ import com.example.aplikacja_android.ui.screens.IngredientListScreen
 import com.example.aplikacja_android.ui.screens.RecipeListScreen
 import com.example.aplikacja_android.ui.screens.RecipeScreen
 import com.example.aplikacja_android.ui.screens.RecipeWeekList
+import com.example.aplikacja_android.ui.screens.ReminderScreen
 import com.example.aplikacja_android.ui.screens.ShoppingListScreen
 import com.example.aplikacja_android.ui.screens.TipScreen
 import com.example.aplikacja_android.ui.viewModels.LocalDatabaseViewModel
@@ -139,6 +140,9 @@ fun Navigation(navcontroller:NavHostController){
         }
         composable(Screens.HealthScreen.route) {
             HealthScreen(navController = navcontroller)
+        }
+        composable(Screens.AddReminderScreen.route) {
+            ReminderScreen(navController = navcontroller)
         }
     }
 }

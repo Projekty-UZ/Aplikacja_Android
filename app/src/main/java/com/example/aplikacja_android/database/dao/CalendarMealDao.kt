@@ -22,7 +22,7 @@ interface CalendarMealDao {
     suspend fun getMealsByDate(localDate: LocalDate): List<CalendarMeal>
 
     @Query("""
-        SELECT Recipes.id, Recipes.instrukcja, Recipes.nazwa, Recipes.rodzaj FROM Recipes 
+        SELECT Recipes.id, Recipes.instrukcja, Recipes.nazwa, Recipes.rodzaj,Recipes.isFavorite FROM Recipes 
         INNER JOIN CalendarMeals ON Recipes.id = CalendarMeals.recipeId
         WHERE CalendarMeals.recipeDate = :localDate
     """)

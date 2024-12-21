@@ -13,6 +13,8 @@ import com.example.aplikacja_android.database.dao.MacrosDao
 import com.example.aplikacja_android.database.dao.NoteDao
 import com.example.aplikacja_android.database.dao.RecipeDao
 import com.example.aplikacja_android.database.dao.RecipeIgredientCrossRefDao
+import com.example.aplikacja_android.database.dao.RecipeTagsDao
+import com.example.aplikacja_android.database.dao.ReminderDao
 import com.example.aplikacja_android.database.dao.ShoppingItemDao
 import com.example.aplikacja_android.database.dao.ShoppingListDao
 import com.example.aplikacja_android.database.dao.TipDao
@@ -29,6 +31,8 @@ import com.example.aplikacja_android.database.models.Note
 import com.example.aplikacja_android.database.models.Unit
 import com.example.aplikacja_android.database.models.Recipe
 import com.example.aplikacja_android.database.models.RecipeIgredientCrossRef
+import com.example.aplikacja_android.database.models.RecipeTags
+import com.example.aplikacja_android.database.models.Reminder
 import com.example.aplikacja_android.database.models.ShoppingItem
 import com.example.aplikacja_android.database.models.ShoppingList
 import java.time.LocalDate
@@ -49,7 +53,9 @@ class Repository(
     private val bodyMeasurementsDao: BodyMeasurementsDao,
     private val bloodSugarMeasurementDao: BloodSugarMeasurmentDao,
     private val bloodPressureMeasurmentsDao: BloodPressureMeasurmentsDao,
-    private val dailyWeightDao: DailyWeightDao
+    private val dailyWeightDao: DailyWeightDao,
+    private val recipeTagsDao: RecipeTagsDao,
+    private val reminderDao: ReminderDao
 ) {
     // Recipe and Ingredient methods
     val recipes = recipeDao.getAllRecipes()
@@ -72,6 +78,7 @@ class Repository(
     suspend fun createRecipe(recipe: Recipe): Long = recipeDao.insert(recipe)
     suspend fun updateRecipe(recipe: Recipe) = recipeDao.update(recipe)
     suspend fun deleteRecipe(recipe: Recipe) = recipeDao.deleteRecipeWithCrossRefs(recipe)
+    fun getFavoriteRecipes() = recipeDao.getFavoriteRecipes()
 
     suspend fun updateIgredient(igredient: Igredient) = igredientDao.update(igredient)
 
@@ -182,6 +189,20 @@ class Repository(
         return dailyWeightDao.getDailyWeightsForMonth(startDate, endDate)
     }
 
+    //recipe tags methods
+    fun getTagsByRecipeId(recipeId: Int) = recipeTagsDao.getTagsByRecipeId(recipeId)
+
+    suspend fun addTag(tag: RecipeTags) = recipeTagsDao.insertTag(tag)
+
+    suspend fun deleteTag(tag: RecipeTags) = recipeTagsDao.deleteTag(tag)
+
+
+    // Reminder methods
+    suspend fun createReminder(reminder: Reminder) = reminderDao.insert(reminder)
+
+    suspend fun getRemindersForDay(day: String) = reminderDao.getRemindersForDay(day)
+
+    suspend fun getReminderById(id: Long) = reminderDao.getReminderById(id)
 
 
 }

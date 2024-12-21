@@ -24,5 +24,7 @@ class AndroidApp : Application(){
         database.bodyMeasurementsDao(),
         database.bloodSugarMeasurementDao(),
         database.bloodPressureMeasurementDao(),
-        database.dailyWeightDao()) }
+        database.dailyWeightDao(),
+        database.recipeTagsDao(),
+        database.reminderDao()) }
 }

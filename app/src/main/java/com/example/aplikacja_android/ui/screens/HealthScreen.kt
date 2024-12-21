@@ -58,7 +58,7 @@ fun HealthScreen(navController: NavController) {
 
     val bodyMeasurements = localDatabaseViewModel.getBodyMeasurements().observeAsState()
     val lastWeight = localDatabaseViewModel.getLastDailyWeight().observeAsState()
-    var newBodyMeasurements by remember { mutableStateOf<BodyMeasurements?>(BodyMeasurements(0,0.0,0.0,0.0,0.0,0.0,0.0,0.0)) }
+    var newBodyMeasurements by remember { mutableStateOf<BodyMeasurements?>(BodyMeasurements(0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0)) }
 
     var addedInitial by remember { mutableStateOf(false) }
     if (!addedInitial && bodyMeasurements.value != null) {
@@ -158,6 +158,14 @@ fun HealthScreen(navController: NavController) {
             label = { Text("Your bicep") },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
         )
+        TextField(
+            value = newBodyMeasurements?.desiredWeight.toString(),
+            onValueChange = { newDesiredWeight ->
+                newBodyMeasurements = newBodyMeasurements?.copy(desiredWeight = newDesiredWeight.toDoubleOrNull() ?: newBodyMeasurements?.desiredWeight ?: 0.0)
+            },
+            label = { Text("Your Desired Weight") },
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+        )
         Button(
             onClick = {
             if(newBodyMeasurements != null) {
@@ -218,6 +226,21 @@ fun HealthScreen(navController: NavController) {
                 lineChartData = lineChartData
             )
         }
+
+        Spacer(modifier = Modifier.padding(16.dp))
+        //compare desired weight with last weight
+        Text("Cel wagowy:")
+        if(lastWeight.value != null) {
+            val desiredWeight = newBodyMeasurements?.desiredWeight ?: bodyMeasurements.value?.desiredWeight ?: 0.0
+            val lastWeightValue = lastWeight.value!!.weight
+            val difference = desiredWeight - lastWeightValue
+            if(difference > 0) {
+                Text("Do osiągnięcia celu pozostało: $difference kg")
+            } else {
+                Text("Gratulacje! Osiągnąłeś swój cel")
+            }
+        }
+        Text("Przydatne linki:")
         Hyperlink("Treningi","https://pacjent.gov.pl/aktualnosc/8-tygodni-dla-zdrowia")
         Hyperlink("Jak zmierzyc cisnienie krwi","https://www.youtube.com/watch?v=qlaEHk8WvJY")
         Hyperlink("Jak zmierzyc poziom cukru","https://www.youtube.com/watch?v=v2DtFKREAjo")

@@ -10,5 +10,6 @@ data class Recipe(
     @PrimaryKey(autoGenerate = true) val id: Int=0,
     val nazwa:String,
     val instrukcja:String,
-    val rodzaj:String
+    val rodzaj:String,
+    val isFavorite:Boolean
 )

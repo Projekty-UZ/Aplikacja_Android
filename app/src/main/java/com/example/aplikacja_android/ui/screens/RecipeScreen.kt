@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aplikacja_android.database.models.Note
 import com.example.aplikacja_android.database.models.Recipe
+import com.example.aplikacja_android.database.models.RecipeTags
 import com.example.aplikacja_android.navigation.Screens
 import com.example.aplikacja_android.ui.viewModels.DatabaseViewModel
 import com.example.aplikacja_android.ui.viewModels.LocalDatabaseViewModel
@@ -41,8 +42,12 @@ fun RecipeScreen(recipe: Recipe,navController: NavController){
     val recipeIngredients = databaseViewModel.getIngredientsOfRecipe(recipe.id).observeAsState(emptyList())
     val nutrientValues = databaseViewModel.calculateRecipeNutrients(recipe.id).observeAsState(emptyMap())
     val recipeNotes = databaseViewModel.getNotesForRecipe(recipe.id).observeAsState(emptyList())
+    val recipeTags = databaseViewModel.getTagsByRecipeId(recipe.id).observeAsState(emptyList())
+
+    val newTagName = remember { mutableStateOf("") }
 
     var newNoteValue by remember { mutableStateOf("") }
+    var isFavorite by remember { mutableStateOf(recipe.isFavorite) }
 
     Column (
         modifier = Modifier.
@@ -53,6 +58,23 @@ fun RecipeScreen(recipe: Recipe,navController: NavController){
         Text(text=recipe.nazwa)
         Text(text=recipe.instrukcja)
         Text(text = recipe.rodzaj)
+
+        //add to favorites button
+        Button(
+            onClick = {
+                GlobalScope.launch {
+                    isFavorite = !isFavorite
+                    databaseViewModel.updateRecipe(recipe.copy(isFavorite = isFavorite))
+                }
+            },
+            modifier = Modifier.padding(8.dp)
+        ) {
+            if(isFavorite){
+                Text("Remove from favorites")
+            } else {
+                Text("Add to favorites")
+            }
+        }
 
         recipeIngredients.value.forEach{ ingredient ->
             Text(text= ingredient.ingredient.nazwa+","+ingredient.ilosc+","+ingredient.unit.jednostka)
@@ -92,6 +114,39 @@ fun RecipeScreen(recipe: Recipe,navController: NavController){
             modifier = Modifier.padding(8.dp)
         ) {
             Text("Add Note")
+        }
+        Text("Tags")
+        Row(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = newTagName.value,
+                onValueChange = { newTagName.value = it },
+                label = { Text("New Tag") }
+            )
+            Button(
+                onClick = {
+                    GlobalScope.launch {
+                        databaseViewModel.insertTag(RecipeTags(name= newTagName.value, recipeId = recipe.id))
+                        newTagName.value = ""
+                    }
+                }
+            ) {
+                Text("Add Tag")
+            }
+        }
+
+        recipeTags.value.forEach { tag ->
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(tag.name)
+                Button(
+                    onClick = {
+                        GlobalScope.launch {
+                            databaseViewModel.deleteTag(tag)
+                        }
+                    }
+                ) {
+                    Text("Remove Tag")
+                }
+            }
         }
     }
     FloatingActionButton(

@@ -19,6 +19,8 @@ import com.example.aplikacja_android.database.dao.MacrosDao
 import com.example.aplikacja_android.database.dao.NoteDao
 import com.example.aplikacja_android.database.dao.RecipeDao
 import com.example.aplikacja_android.database.dao.RecipeIgredientCrossRefDao
+import com.example.aplikacja_android.database.dao.RecipeTagsDao
+import com.example.aplikacja_android.database.dao.ReminderDao
 import com.example.aplikacja_android.database.dao.ShoppingItemDao
 import com.example.aplikacja_android.database.dao.ShoppingListDao
 import com.example.aplikacja_android.database.dao.TipDao
@@ -39,6 +41,8 @@ import com.example.aplikacja_android.database.models.BloodPressureMeasurement
 import com.example.aplikacja_android.database.models.BloodSugarMeasurement
 import com.example.aplikacja_android.database.models.BodyMeasurements
 import com.example.aplikacja_android.database.models.DailyWeight
+import com.example.aplikacja_android.database.models.RecipeTags
+import com.example.aplikacja_android.database.models.Reminder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -59,7 +63,9 @@ import kotlinx.coroutines.launch
     BodyMeasurements::class,
     BloodPressureMeasurement::class,
     BloodSugarMeasurement::class,
-    DailyWeight::class
+    DailyWeight::class,
+    RecipeTags::class,
+    Reminder::class
                      ], version = 4, exportSchema = false)
 @TypeConverters(DateConverter::class)
 abstract  class AppDatabase: RoomDatabase(){
@@ -79,6 +85,8 @@ abstract  class AppDatabase: RoomDatabase(){
     abstract fun bloodPressureMeasurementDao(): BloodPressureMeasurmentsDao
     abstract fun bloodSugarMeasurementDao(): BloodSugarMeasurmentDao
     abstract fun dailyWeightDao(): DailyWeightDao
+    abstract fun recipeTagsDao(): RecipeTagsDao
+    abstract fun reminderDao(): ReminderDao
     companion object{
         @Volatile
         private var INSTANCE: AppDatabase? = null
@@ -205,5 +213,5 @@ suspend fun prepopulateDatabase(database: AppDatabase) {
     }
 
     database.macrosDao().insertOrUpdate(Macros(0, 2000.0, 50.0, 70.0, 300.0))
-    database.bodyMeasurementsDao().insert(BodyMeasurements(0, 180.0, 80.0, 100.0, 90.0, 50.0, 30.0, 40.0))
+    database.bodyMeasurementsDao().insert(BodyMeasurements(0, 180.0, 80.0, 100.0, 90.0, 50.0, 30.0, 40.0, 70.0))
 }

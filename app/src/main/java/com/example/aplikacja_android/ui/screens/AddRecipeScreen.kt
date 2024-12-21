@@ -238,7 +238,8 @@ fun saveRecipe(
             Recipe(
                 nazwa = name,
                 rodzaj = type,
-                instrukcja = instruction
+                instrukcja = instruction,
+                isFavorite = false
             )
         )
         val newRecipe = databaseViewModel.getSingleRecipe(recipeId.toInt())

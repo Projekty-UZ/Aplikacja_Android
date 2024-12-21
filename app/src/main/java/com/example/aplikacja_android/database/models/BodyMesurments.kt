@@ -12,5 +12,6 @@ data class BodyMeasurements(
     val chest: Double,    
     val thigh: Double,  
     val neck: Double,      
-    val bicep: Double  
+    val bicep: Double ,
+    val desiredWeight: Double
 )
