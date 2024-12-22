@@ -54,10 +54,13 @@ fun HealthScreen(navController: NavController) {
     val localDatabaseViewModel = LocalDatabaseViewModel.current
 
     val allWeightCurrentMonth = localDatabaseViewModel.getWeightsForCurrentMonth().observeAsState()
-
+    val macrosCurrentMonth = localDatabaseViewModel.calculateCurrentMonthNutrients().observeAsState()
+    val desiredMacrosCurrentMonth = localDatabaseViewModel.calculateDesiredCurrentMonthNutrients().observeAsState()
+    val caloriesBurned = localDatabaseViewModel.calculateCaloriesBurnedForMonth().observeAsState()
 
     val bodyMeasurements = localDatabaseViewModel.getBodyMeasurements().observeAsState()
     val lastWeight = localDatabaseViewModel.getLastDailyWeight().observeAsState()
+
     var newBodyMeasurements by remember { mutableStateOf<BodyMeasurements?>(BodyMeasurements(0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0)) }
 
     var addedInitial by remember { mutableStateOf(false) }
@@ -233,12 +236,48 @@ fun HealthScreen(navController: NavController) {
         if(lastWeight.value != null) {
             val desiredWeight = newBodyMeasurements?.desiredWeight ?: bodyMeasurements.value?.desiredWeight ?: 0.0
             val lastWeightValue = lastWeight.value!!.weight
-            val difference = desiredWeight - lastWeightValue
+            val difference = lastWeightValue - desiredWeight
             if(difference > 0) {
                 Text("Do osiągnięcia celu pozostało: $difference kg")
             } else {
                 Text("Gratulacje! Osiągnąłeś swój cel")
             }
+        }
+        if(lastWeight.value != null && allWeightCurrentMonth.value?.get(0)?.weight != null) {
+            val lastWeightValue = lastWeight.value!!.weight
+            val firstWeightValue = allWeightCurrentMonth.value?.get(0)?.weight
+            val difference = lastWeightValue - firstWeightValue!!
+            if(difference > 0) {
+                Text("W tym miesiącu przytyłeś: $difference kg")
+            } else {
+                Text("W tym miesiącu schudłeś: ${difference * -1} kg")
+            }
+        }
+        Spacer(modifier = Modifier.padding(16.dp))
+        //compare desired weight with last weight
+        Text("Konsumpcja kalorii:")
+        if(macrosCurrentMonth.value != null && desiredMacrosCurrentMonth.value != null) {
+            Text("Skonsumowane kalorie:")
+            Text("Białko: ${"%.2f".format(macrosCurrentMonth.value!!["bialko"] ?: 0.0)} ")
+            Text("Tłuszcz: ${"%.2f".format(macrosCurrentMonth.value!!["tluszcz"] ?: 0.0)} ")
+            Text("Węglowodany: ${"%.2f".format(macrosCurrentMonth.value!!["weglowodany"] ?: 0.0)} ")
+            Text("Kalorie: ${"%.2f".format(macrosCurrentMonth.value!!["kalorie"] ?: 0.0)} ")
+            Text("Cel kalorii:")
+            Text("Białko: ${"%.2f".format(desiredMacrosCurrentMonth.value!!["bialko"] ?: 0.0)} ")
+            Text("Tłuszcz: ${"%.2f".format(desiredMacrosCurrentMonth.value!!["tluszcz"] ?: 0.0)} ")
+            Text("Węglowodany: ${"%.2f".format(desiredMacrosCurrentMonth.value!!["weglowodany"] ?: 0.0)} ")
+            Text("Kalorie: ${"%.2f".format(desiredMacrosCurrentMonth.value!!["kalorie"] ?: 0.0)} ")
+            Text("Porównanie z celem:")
+            Text("Białko: ${"%.2f".format(macrosCurrentMonth.value!!["bialko"]?.minus(desiredMacrosCurrentMonth.value!!["bialko"] ?: 0.0) ?: 0.0)} ")
+            Text("Tłuszcz: ${"%.2f".format(macrosCurrentMonth.value!!["tluszcz"]?.minus(desiredMacrosCurrentMonth.value!!["tluszcz"] ?: 0.0) ?: 0.0)} ")
+            Text("Węglowodany: ${"%.2f".format(macrosCurrentMonth.value!!["weglowodany"]?.minus(desiredMacrosCurrentMonth.value!!["weglowodany"] ?: 0.0) ?: 0.0)} ")
+            Text("Kalorie: ${"%.2f".format(macrosCurrentMonth.value!!["kalorie"]?.minus(desiredMacrosCurrentMonth.value!!["kalorie"] ?: 0.0) ?: 0.0)} ")
+        }
+        Spacer(modifier = Modifier.padding(16.dp))
+        Text("Spalone kalorie:")
+        if(caloriesBurned.value != null) {
+            Text("Kalorie: ${"%.2f".format(caloriesBurned.value ?: 0.0)} ")
+            Spacer(modifier = Modifier.padding(16.dp))
         }
         Text("Przydatne linki:")
         Hyperlink("Treningi","https://pacjent.gov.pl/aktualnosc/8-tygodni-dla-zdrowia")

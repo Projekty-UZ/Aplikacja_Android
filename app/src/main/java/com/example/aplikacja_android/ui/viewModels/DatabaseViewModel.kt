@@ -4,6 +4,10 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -194,6 +198,33 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
     suspend fun deleteActivity(activity: Activity){
         repository.deleteActivity(activity)
     }
+
+    fun calculateCaloriesBurnedForMonth(): LiveData<Double>{
+        val localDate = LocalDate.now()
+        var caloriesBurnedTotal = MutableLiveData<Double>()
+
+        viewModelScope.launch {
+            val allActivities = mutableListOf<Activity>()
+            for(i in 1..localDate.lengthOfMonth()){
+                val date = LocalDate.of(localDate.year, localDate.month, i)
+                val activities = getActivitiesOfDate(date).asFlow().firstOrNull() ?: emptyList()
+                if(activities.isNotEmpty()){
+                    allActivities.addAll(activities)
+                }
+            }
+            caloriesBurnedTotal.value = sumCaloriesBurnedForDay(allActivities)
+        }
+        return caloriesBurnedTotal
+    }
+
+    fun sumCaloriesBurnedForDay(activities: List<Activity>): Double{
+        var totalCalories = 0.0
+        activities.forEach { activity ->
+            totalCalories += activity.totalCaloriesBurned
+        }
+        return totalCalories
+    }
+
     //blood sugar measurements methods
     suspend fun insertBloodSugarMeasurement(bloodSugarMeasurement: BloodSugarMeasurement){
         repository.createBloodSugarMeasurement(bloodSugarMeasurement)
@@ -318,6 +349,53 @@ class DatabaseViewModel(private val repository:Repository):ViewModel() {
         }
 
         return nutrientValues
+    }
+
+    fun calculateCurrentMonthNutrients(): LiveData<Map<String, Double>> {
+        val nutrientValues = MutableLiveData<Map<String, Double>>()
+
+        viewModelScope.launch {
+            val currentDate = LocalDate.now()
+            val allIngredients = mutableListOf<IngredientWithUnit>()
+            for(i in 1..currentDate.lengthOfMonth()){
+                val date = LocalDate.of(currentDate.year, currentDate.month, i)
+                val recipes = getRecipesForDate(date).asFlow().firstOrNull() ?: emptyList()
+                if (recipes.isNotEmpty()) {
+
+                    recipes.forEach { recipe ->
+                        val ingredients = getIngredientsOfRecipe(recipe.id).asFlow().firstOrNull() ?: emptyList()
+                        allIngredients.addAll(ingredients)
+                    }
+                }
+            }
+            nutrientValues.value = sumNutrientsFromIngredients(allIngredients)
+        }
+
+        return nutrientValues
+    }
+
+    fun calculateDesiredCurrentMonthNutrients(): LiveData<Map<String, Double>>{
+        val desiredNutrientsForDay = MutableLiveData<Map<String, Double>>()
+        var daysWithRecipes by mutableStateOf(0)
+        viewModelScope.launch {
+            var desiredNutrients = getMacros().asFlow().firstOrNull() ?: Macros(0,0.0, 0.0, 0.0,0.0)
+            val currentDate = LocalDate.now()
+
+            for(i in 1..currentDate.lengthOfMonth()){
+                val date = LocalDate.of(currentDate.year, currentDate.month, i)
+                val recipes = getRecipesForDate(date).asFlow().firstOrNull() ?: emptyList()
+                if (recipes.isNotEmpty()) {
+                    daysWithRecipes++
+                }
+            }
+            desiredNutrientsForDay.value = mapOf(
+                "kalorie" to desiredNutrients.calories * daysWithRecipes,
+                "bialko" to desiredNutrients.protein * daysWithRecipes,
+                "tluszcz" to desiredNutrients.fat * daysWithRecipes,
+                "weglowodany" to desiredNutrients.carbohydrates * daysWithRecipes
+            )
+        }
+        return desiredNutrientsForDay
     }
 
     fun calculateRecipeNutrients(recipeId: Int): LiveData<Map<String, Double>>{

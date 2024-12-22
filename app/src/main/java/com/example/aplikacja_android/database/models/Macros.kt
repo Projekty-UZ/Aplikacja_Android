@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "Macros")
 data class Macros(
     @PrimaryKey val id: Int = 0,
-    val calories: Double,
+    var calories: Double,
     val protein: Double,
     val fat: Double,
     val carbohydrates: Double
